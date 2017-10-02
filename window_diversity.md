@@ -61,3 +61,27 @@ Parameters explained:
 
 ### Find windows under positive selection
 In this section we will find the extreme outlier windows to identify regions under positive selection.  Most of this analysis will be done in R.
+
+
+
+# Old Code
+Sliding window-based anlaysis using the [PopGenome](https://cran.r-project.org/web/packages/PopGenome/index.html) package in R
+```R
+library(PopGenome)
+filename = "snps.vcf.gz"
+vcf_handle <- .Call("VCF_open",filename)
+samplenames <- .Call("VCF_getSampleNames",vcf_handle)
+
+GENOME.class <- readVCF("snps.vcf.gz",numcols = 100000, tid = "NW_006223456.1", 
+   from = 1, to = 1000000000, include.unknown = F, approx = FALSE, out = "", 
+   parallel = FALSE, gffpath = FALSE)
+DC = samplenames[1:7]
+DROM = samplenames[8:16]
+WC = samplenames[17:25]
+GENOME.class <- set.populations(GENOME.class,list(DC, DROM, WC), diploid = TRUE)
+#GENOME.class <- set.outgroup(GENOME.class,c("z"), diploid = TRUE)
+
+slide <- sliding.window.transform(GENOME.class,10000,10000, type=2)
+length(slide@region.names)
+slide <- diversity.stats(slide)
+```
