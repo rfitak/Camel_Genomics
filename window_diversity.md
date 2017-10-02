@@ -85,7 +85,7 @@ slide <- sliding.window.transform(GENOME.class,10000,10000, type=2)
 length(slide@region.names)
 slide <- diversity.stats(slide)
 ```
-Sliding window-based anlaysis using python
+Sliding window-based anlaysis using [genomics.py](https://github.com/simonhmartin/genomics_general/blob/master/genomics.py) from Simon Martin
 ```python
 import gzip
 import genomics
