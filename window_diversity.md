@@ -57,3 +57,7 @@ Parameters explained:
 - --Threads 8 :: use 8 threads, this took only 9 minutes using 8 threads
 - --verbose :: provide detailed run time log
 - --population XX 1,2,3,... :: the population ID and comma-separated list of samples.
+
+
+### Find windows under positive selection
+In this section we will find the extreme outlier windows to identify regions under positive selection.  Most of this analysis will be done in R.
