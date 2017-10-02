@@ -85,3 +85,64 @@ slide <- sliding.window.transform(GENOME.class,10000,10000, type=2)
 length(slide@region.names)
 slide <- diversity.stats(slide)
 ```
+Sliding window-based anlaysis using python
+```python
+import gzip
+import genomics
+genoFileName = "input2.geno.gz"
+genoFile = gzip.open(genoFileName, "r")
+popNames = ["Cdrom","Cbact","Cferu"]
+samples = [["Cdrom.DROM802","Cdrom.Drom439","Cdrom.Drom795","Cdrom.Drom796",
+           "Cdrom.Drom797","Cdrom.Drom800_55","Cdrom.Drom806","Cdrom.Drom816","Cdrom.Drom820"],
+           ["Cbact.DC158_53","Cbact.DC269","Cbact.DC399","Cbact.DC400","Cbact.DC402","Cbact.DC408","Cbact.DC423"],
+           ["Cferu.WC214","Cferu.WC216","Cferu.WC218","Cferu.WC219","Cferu.WC220",
+           "Cferu.WC247","Cferu.WC303_108","Cferu.WC304","Cferu.WC305"]]
+samples = [["DROM802","Drom439","Drom795","Drom796",
+           "Drom797","Drom800_55","Drom806","Drom816","Drom820"],
+           ["DC158_53","DC269","DC399","DC400","DC402","DC408","DC423"],
+           ["WC214","WC216","WC218","WC219","WC220",
+           "WC247","WC303_108","WC304","WC305"]]
+
+sampleData = genomics.SampleData(popInds = samples, popNames = popNames)
+
+windSize = 10000
+stepSize = 5000
+minSites = 2
+
+windowGenerator = genomics.slidingWindows(genoFile, windSize, stepSize, skipDeepcopy = True)
+outFileName = "pop_div.w50m25s25.csv"
+outFile = open(outFileName, "w")
+outFile.write("scaffold,start,end,sites")
+
+for x in range(len(popNames)-1):
+    outFile.write(",pi_" + popNames[x])
+    for y in range(x+1,len(popNames)):
+        outFile.write(",Fst_" + popNames[x] + "_" + popNames[y])
+        outFile.write(",dxy_" + popNames[x] + "_" + popNames[y])
+
+outFile.write("\n")
+
+n=0
+for window in windowGenerator:
+    if window.seqLen() >= minSites:
+        #if there are enough sites, make alignment object
+        Aln = genomics.callsToAlignment(window.seqDict(), sampleData, seqType = "pairs")
+        #get divergence stats
+        statsDict = genomics.popDiv(Aln)
+        stats = []
+        for x in range(len(popNames)-1):
+            #retrieve pi for each population
+            stats.append(statsDict["pi_" + popNames[x]])
+            for y in range(x+1,len(popNames)):
+                #retrieve dxy and Fst for each pair
+                stats.append(statsDict["fst_" + popNames[x] + "_" + popNames[y]])
+                stats.append(statsDict["dxy_" + popNames[x] + "_" + popNames[y]])
+        #add window stats and write to file
+        out_data = [window.scaffold, window.start, window.end, window.seqLen()] + [round(s,3) for s in stats]
+        outFile.write(",".join([str(x) for x in out_data]) + "\n")
+    print n
+    n+=1
+outFile.close()
+genoFile.close()
+exit()
+```
