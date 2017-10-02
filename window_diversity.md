@@ -27,3 +27,5 @@ Notes:
 - --exclude xy.exclude :: a file listing the scaffold IDs to exclude.  These are putative X and Y scaffolds identified previously
 -  If you add ".gz" to the output file, it is automatically compressed using gzip.
 - We began with 10819573 SNPs, but reduced to 10581849 SNPs after removing the X and Y scaffold loci
+
+The following script will calculate individual heterozygosity, pi (within populations) and divergence (Dxy, between populations).  
