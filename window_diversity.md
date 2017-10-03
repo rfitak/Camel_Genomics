@@ -60,10 +60,10 @@ Parameters explained:
 
 
 ### Find windows under positive selection
-In this section we will find the extreme outlier windows to identify regions under positive selection.  We will also add the calculation of the population branch statistic (PBS) to further identify positive selection in the DC or WC lineages.  See XXXXX for the original derivation.  It is actually quite simple.
+In this section we will find the extreme outlier windows to identify regions under positive selection.  We will also add the calculation of the population branch statistic (PBS) to further identify positive selection in the DC or WC lineages.  See [Yi et al. 2010 Science](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3711608/) for the original derivation.  It is actually quite simple.
 Most of this analysis will be done in R.
 
-This function calculates the PBS statistic.  The input is a vector of three Fst measures. The first Fst is the population of interest compared with the sister population, the second is population of interest compared with the outgroup, and the last Fst is the sister population compared with the outgroup.  The function returns the PBS for the population of interest.
+The function below calculates the PBS statistic.  The input is a vector of three Fst measures. The first Fst is the population of interest compared with the sister population, the second is population of interest compared with the outgroup, and the last Fst is the sister population compared with the outgroup.  The function returns the PBS for the population of interest.
 
 ```R
 PBS = function(fst){
@@ -92,7 +92,7 @@ DC = c("DC158_53", "DC269", "DC399", "DC400", "DC402", "DC408", "DC423")
 WC = c("WC214", "WC216", "WC218", "WC219", "WC220", "WC247", "WC303_108", "WC304", "WC305")
 
 # Setup empty vector of new Reynolds' Fst
-Rey.fst = vector()
+Reynolds.fst = vector()
 
 # Now we will cycle throug each window in 'data'
 for (w in 1:nrow(data)){
@@ -155,31 +155,19 @@ for (w in 1:nrow(data)){
    Drom.vs.DC.fst = mean(out[,1], na.rm = T) / mean(out[,2], na.rm = T)
    Drom.vs.WC.fst = mean(out[,3], na.rm = T) / mean(out[,4], na.rm = T)
    DC.vs.WC.fst = mean(out[,5], na.rm = T) / mean(out[,6], na.rm = T)
-   Rey.fst = rbind(Rey.fst, c(Drom.vs.DC.fst, Drom.vs.WC.fst, DC.vs.WC.fst))
+   Reynolds.fst = rbind(Reynolds.fst, c(Drom.vs.DC.fst, Drom.vs.WC.fst, DC.vs.WC.fst))
    
    # Calculate progress of iterations
    p = w / nrow(data)
    if (p %in% seq(0,1, by = 0.1)) message(paste0(p*100, "% complete..."))
 }
-
-
 ```
 
-### PBS function in R
-This function calculates the PBS statistic.  The input is a vector of three Fst measures (Reynold's method). The first Fst is the population of interest compared with the sister population, the second is population of interest compared with the outgroup, and the last Fst is the sister population compared with the outgroup.  The function returns the PBS for the population of interest.
+So now we have a data frame ```Reynolds.fst``` of Reynolds' Fst values for each population pair in each window.  Finally, we will calculate the PBS for both DC and WC and append our results to the end of our data file.
 
-```R
-PBS = function(fst){
-   if (any(is.na(fst) == T)) return(NA)
-   else {
-      T1 = -log(1 - fst[1]) #DC vs WC
-      T2 = -log(1 - fst[2]) #DC vs DROM
-      T3 = -log(1 - fst[3]) #WC cs DROM
-      pbs = (T1 + T2 - T3) / 2
-      return(pbs)
-   }
-}
-```
+
+
+
 
 
 # Old Code
