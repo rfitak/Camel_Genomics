@@ -60,8 +60,28 @@ Parameters explained:
 
 
 ### Find windows under positive selection
-In this section we will find the extreme outlier windows to identify regions under positive selection.  Most of this analysis will be done in R.
+In this section we will find the extreme outlier windows to identify regions under positive selection.  We will also add the calculation of the population branch statistic (PBS) to further identify positive selection in the DC or WC lineages.  See XXXXX for the original derivation.  It is actually quite simple.
+Most of this analysis will be done in R.
 
+### PBS function in R
+This function calculates the PBS statistic.  The input is a vector of three Fst measures (Reynold's method). The first Fst is the population of interest compared with the sister population, the second is population of interest compared with the outgroup, and the last Fst is the sister population compared with the outgroup.  The function returns the PBS for the population of interest.
+
+```R
+PBS = function(fst){
+   if (any(is.na(fst) == T)) return(NA)
+   else {
+      # Correct Fst = 1, since log10(1-1) is undefined.
+      if (fst[1] == 1) fst[1] = 0.9999
+      if (fst[2] == 1) fst[2] = 0.9999
+      if (fst[3] == 1) fst[3] = 0.9999
+      T1 = -log10(1 - fst[1]) #DC vs WC
+      T2 = -log10(1 - fst[2]) #DC vs DROM
+      T3 = -log10(1 - fst[3]) #WC cs DROM
+      pbs = (T1 + T2 - T3) / 2
+      return(pbs)
+   }
+}
+```
 
 
 # Old Code
