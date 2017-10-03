@@ -75,6 +75,9 @@ Drom = c("DROM802", "Drom439", "Drom795", "Drom796", "Drom797", "Drom800_55", "D
 DC = c("DC158_53", "DC269", "DC399", "DC400", "DC402", "DC408", "DC423")
 WC = c("WC214", "WC216", "WC218", "WC219", "WC220", "WC247", "WC303_108", "WC304", "WC305")
 
+# Setup empty vector of new Reynolds' Fst
+Rey.fst = vector()
+
 # Now we will cycle throug each window in 'data'
 for (w in 1:nrow(data)){
    # Get snps in the first window
@@ -136,6 +139,7 @@ for (w in 1:nrow(data)){
    Drom.vs.DC.fst = mean(out[,1], na.rm = T) / mean(out[,2], na.rm = T)
    Drom.vs.WC.fst = mean(out[,3], na.rm = T) / mean(out[,4], na.rm = T)
    DC.vs.WC.fst = mean(out[,5], na.rm = T) / mean(out[,6], na.rm = T)
+   Rey.fst = rbind(Rey.fst, c(Drom.vs.DC.fst, Drom.vs.WC.fst, DC.vs.WC.fst))
    
    # Calculate progress of iterations
    p = w / nrow(data)
