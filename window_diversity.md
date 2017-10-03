@@ -66,8 +66,81 @@ Most of this analysis will be done in R.
 ### Calculate Reynold's Fst
 In order to calculate the PBS, we first need to calculate Fst using the equation by Reynolds et al. 1983.  The Fst calculated by the python tool above is slightly different.  Here is the R code to do so:
 ```R
-# Reynolds Fst
+# First load the genotype file and window results file
+genos = read.table(gzfile("input.geno.gz"), sep = "\t", header = T, comment.char = "", stringsAsFactors = F)
+data = read.csv(gzfile("variation.100kb.csv.gz"), header = T)
 
+# Make list of individuals in each population
+Drom = c("DROM802", "Drom439", "Drom795", "Drom796", "Drom797", "Drom800_55", "Drom806", "Drom816", "Drom820")
+DC = c("DC158_53", "DC269", "DC399", "DC400", "DC402", "DC408", "DC423")
+WC = c("WC214", "WC216", "WC218", "WC219", "WC220", "WC247", "WC303_108", "WC304", "WC305")
+
+# Now we will cycle throug each window in 'data'
+for (w in 1:nrow(data)){
+   # Get snps in the first window
+   chrom = as.character(data$scaffold[w])
+   start = data$start[w]
+   end = data$end[w]
+   window = genos[which(genos$X.CHROM == chrom),]
+   window = window[window$POS >= start & window$POS <= end,]
+
+   # Get major and minor allele overall for each locus
+   window.tmp = window[,3:ncol(window)]
+   alleles = apply(window.tmp, 1, function(x) gsub("/", "", paste(x[which(x != "N/N")], collapse="")))
+   counts = lapply(strsplit(alleles, ""), function(x) summary(as.factor(x)))
+
+   # Subsets the window data by population
+   Drom.win = window[,which(colnames(window) %in% Drom)]
+   DC.win = window[,which(colnames(window) %in% DC)]
+   WC.win = window[,which(colnames(window) %in% WC)]
+   Drom.alleles = strsplit(apply(Drom.win, 1, function(x) gsub("/", "", paste(x[which(x != "N/N")], collapse=""))), "")
+   DC.alleles = strsplit(apply(DC.win, 1, function(x) gsub("/", "", paste(x[which(x != "N/N")], collapse=""))), "")
+   WC.alleles = strsplit(apply(WC.win, 1, function(x) gsub("/", "", paste(x[which(x != "N/N")], collapse=""))), "")
+
+   # Now process each SNP in the window to get Reynolds' a and a+b
+   out = vector()
+   for (i in 1:nrow(window)){
+      Drom.counts = sapply(names(counts[[i]]), function(x) length(which(Drom.alleles[[i]] == x)))
+      Drom.freqs = Drom.counts / sum(Drom.counts)
+      Drom.N = sum(Drom.counts)
+      Drom.alpha1 = 1 - sum((Drom.freqs)^2)
+
+      DC.counts = sapply(names(counts[[i]]), function(x) length(which(DC.alleles[[i]] == x)))
+      DC.freqs = DC.counts / sum(DC.counts)
+      DC.alpha1 = 1 - sum((DC.freqs)^2)
+      DC.N = sum(DC.counts)
+
+      WC.counts = sapply(names(counts[[i]]), function(x) length(which(WC.alleles[[i]] == x)))
+      WC.freqs = WC.counts / sum(WC.counts)
+      WC.alpha1 = 1 - sum((WC.freqs)^2)
+      WC.N = sum(WC.counts)
+
+      # For each pair of populations
+      # Drom v DC
+      Drom.vs.DC.al = 1/2 * sum((Drom.freqs - DC.freqs)^2) - (Drom.N + DC.N) * (Drom.N * Drom.alpha1 + DC.N * DC.alpha1) / (4 * Drom.N * DC.N * (Drom.N + DC.N - 1))
+      Drom.vs.DC.abl = 1/2 * sum((Drom.freqs - DC.freqs)^2) + (4 * Drom.N * DC.N - Drom.N - DC.N) * (Drom.N * Drom.alpha1 + DC.N * DC.alpha1) / (4 * Drom.N * DC.N * (Drom.N + DC.N - 1))
+   
+      # Drom v WC
+      Drom.vs.WC.al = 1/2 * sum((Drom.freqs - WC.freqs)^2) - (Drom.N + WC.N) * (Drom.N * Drom.alpha1 + WC.N * WC.alpha1) / (4 * Drom.N * WC.N * (Drom.N + WC.N - 1))
+      Drom.vs.WC.abl = 1/2 * sum((Drom.freqs - WC.freqs)^2) + (4 * Drom.N * WC.N - Drom.N - WC.N) * (Drom.N * Drom.alpha1 + WC.N * WC.alpha1) / (4 * Drom.N * WC.N * (Drom.N + WC.N - 1))
+   
+      # DC v WC
+      DC.vs.WC.al = 1/2 * sum((DC.freqs - WC.freqs)^2) - (DC.N + WC.N) * (DC.N * DC.alpha1 + WC.N * WC.alpha1) / (4 * DC.N * WC.N * (DC.N + WC.N - 1))
+      DC.vs.WC.abl = 1/2 * sum((DC.freqs - WC.freqs)^2) + (4 * DC.N * WC.N - DC.N - WC.N) * (DC.N * DC.alpha1 + WC.N * WC.alpha1) / (4 * DC.N * WC.N * (DC.N + WC.N - 1))
+
+      # Add to output vector
+      out = rbind(out, c(Drom.vs.DC.al, Drom.vs.DC.abl, Drom.vs.WC.al, Drom.vs.WC.abl, DC.vs.WC.al, DC.vs.WC.abl))
+   }
+   
+   # Now get weighted Fst per locus, or ratio of the averages of al and abl
+   Drom.vs.DC.fst = mean(out[,1], na.rm = T) / mean(out[,2], na.rm = T)
+   Drom.vs.WC.fst = mean(out[,3], na.rm = T) / mean(out[,4], na.rm = T)
+   DC.vs.WC.fst = mean(out[,5], na.rm = T) / mean(out[,6], na.rm = T)
+   
+   # Calculate progress of iterations
+   p = w / nrow(data)
+   if (p %in% seq(0,1, by = 0.1)) message(paste0(p*100, "% complete..."))
+}
 
 
 ```
