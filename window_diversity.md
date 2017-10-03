@@ -70,13 +70,9 @@ This function calculates the PBS statistic.  The input is a vector of three Fst 
 PBS = function(fst){
    if (any(is.na(fst) == T)) return(NA)
    else {
-      # Correct Fst = 1, since log10(1-1) is undefined.
-      if (fst[1] == 1) fst[1] = 0.9999
-      if (fst[2] == 1) fst[2] = 0.9999
-      if (fst[3] == 1) fst[3] = 0.9999
-      T1 = -log10(1 - fst[1]) #DC vs WC
-      T2 = -log10(1 - fst[2]) #DC vs DROM
-      T3 = -log10(1 - fst[3]) #WC cs DROM
+      T1 = -log(1 - fst[1]) #DC vs WC
+      T2 = -log(1 - fst[2]) #DC vs DROM
+      T3 = -log(1 - fst[3]) #WC cs DROM
       pbs = (T1 + T2 - T3) / 2
       return(pbs)
    }
