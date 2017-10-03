@@ -63,6 +63,15 @@ Parameters explained:
 In this section we will find the extreme outlier windows to identify regions under positive selection.  We will also add the calculation of the population branch statistic (PBS) to further identify positive selection in the DC or WC lineages.  See XXXXX for the original derivation.  It is actually quite simple.
 Most of this analysis will be done in R.
 
+### Calculate Reynold's Fst
+In order to calculate the PBS, we first need to calculate Fst using the equation by Reynolds et al. 1983.  The Fst calculated by the python tool above is slightly different.  Here is the R code to do so:
+```R
+# Reynolds Fst
+
+
+
+```
+
 ### PBS function in R
 This function calculates the PBS statistic.  The input is a vector of three Fst measures (Reynold's method). The first Fst is the population of interest compared with the sister population, the second is population of interest compared with the outgroup, and the last Fst is the sister population compared with the outgroup.  The function returns the PBS for the population of interest.
 
