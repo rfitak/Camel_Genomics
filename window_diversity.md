@@ -227,6 +227,26 @@ bedtools \
    sort | \
    uniq > DC.selected.genes.gff3
    # Results: no genes overlapping
+
+# DC PBS
+bedtools \
+   intersect \
+   -wa \
+   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -b <(cut -f1-3 DC.PBS.100kb.tsv | sed '1d') | \
+   grep -P "\tgene\t" | \
+   sort | uniq > DC.PBS.genes.gff3
+   # Results: 2 tRNAs, XX genes!
+
+# WC PBS
+bedtools \
+   intersect \
+   -wa \
+   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -b <(cut -f1-3 WC.PBS.100kb.tsv | sed '1d') | \
+   grep -P "\tgene\t" | \
+   sort | uniq > WC.PBS.genes.gff3
+   # Results: 19 tRNAs, 1 pseudogenes, 64 genes!
 ```
 
 
