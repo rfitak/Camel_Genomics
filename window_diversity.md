@@ -69,6 +69,9 @@ The function below calculates the PBS statistic.  The input is a vector of three
 PBS = function(fst){
    if (any(is.na(fst) == T)) return(NA)
    else {
+      if (fst[1] == 1) fst[1] = 0.9999
+      if (fst[2] == 1) fst[2] = 0.9999
+      if (fst[3] == 1) fst[3] = 0.9999
       T1 = -log(1 - fst[1]) #DC vs WC
       T2 = -log(1 - fst[2]) #DC vs DROM
       T3 = -log(1 - fst[3]) #WC cs DROM
@@ -180,8 +183,24 @@ PBS_WC = apply(fst, 1, PBS)
 # Merge with data
 data = cbind(data, PBS_DC, PBS_WC)
 
-# Save
+# Save the new data table
+write.table(data, file = "Final-table.100kb.tsv", quote = F, sep = "\t", row.names = F)
 
+# Find Drom outlier windows
+Drom.selected = data[which(data$pi_Drom < quantile(data$pi_Drom, 0.01) & data$dxy_Drom_WC > quantile(data$dxy_Drom_WC, 0.99)), ]
+write.table(Drom.selected, file = "Drom.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
+
+# Find DC outlier windows
+DC.selected = data[which(data$pi_DC < quantile(data$pi_DC, 0.01) & data$dxy_DC_WC > quantile(data$dxy_DC_WC, 0.99)), ]
+write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
+
+# DC PBS outlier windows
+DC.PBS = data[which(data$PBS_DC > quantile(data$PBS_DC, 0.999, na.rm = T)), ]
+write.table(DC.PBS, file = "DC.PBS.100kb.tsv", quote = F, sep = "\t", row.names = F)
+
+# WC PBS outlier windows
+WC.PBS = data[which(data$PBS_WC > quantile(data$PBS_WC, 0.999, na.rm = T)), ]
+write.table(WC.PBS, file = "WC.PBS.100kb.tsv", quote = F, sep = "\t", row.names = F)
 ```
 
 
