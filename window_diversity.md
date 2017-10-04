@@ -164,7 +164,25 @@ for (w in 1:nrow(data)){
 ```
 
 So now we have a data frame ```Reynolds.fst``` of Reynolds' Fst values for each population pair in each window.  Finally, we will calculate the PBS for both DC and WC and append our results to the end of our data file.
+```R
+# Add column names to Reynolds.fst and merge with data
+colnames(Reynolds.fst) = c("Rey_Fst_Drom_DC", "Rey_Fst_Drom_WC", "Rey_Fst_DC_WC")
+data = cbind(data, Reynolds.fst)
 
+# Get the PBS for DC
+fst = data[,c(42, 40, 41)]
+PBS_DC = apply(fst, 1, PBS)
+
+# Get the PBS for WC
+fst = data[,c(42, 41, 40)]
+PBS_WC = apply(fst, 1, PBS)
+
+# Merge with data
+data = cbind(data, PBS_DC, PBS_WC)
+
+# Save
+
+```
 
 
 
