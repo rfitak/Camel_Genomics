@@ -187,11 +187,11 @@ data = cbind(data, PBS_DC, PBS_WC)
 write.table(data, file = "Final-table.100kb.tsv", quote = F, sep = "\t", row.names = F)
 
 # Find Drom outlier windows
-Drom.selected = data[which(data$pi_Drom < quantile(data$pi_Drom, 0.01) & data$dxy_Drom_WC > quantile(data$dxy_Drom_WC, 0.99)), ]
+Drom.selected = data[which(data$pi_Drom < quantile(data$pi_Drom, 0.005) & data$dxy_Drom_WC > quantile(data$dxy_Drom_WC, 0.995)), ]
 write.table(Drom.selected, file = "Drom.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
 
 # Find DC outlier windows
-DC.selected = data[which(data$pi_DC < quantile(data$pi_DC, 0.01) & data$dxy_DC_WC > quantile(data$dxy_DC_WC, 0.99)), ]
+DC.selected = data[which(data$pi_DC < quantile(data$pi_DC, 0.005) & data$dxy_DC_WC > quantile(data$dxy_DC_WC, 0.995)), ]
 write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
 
 # DC PBS outlier windows
@@ -203,7 +203,31 @@ WC.PBS = data[which(data$PBS_WC > quantile(data$PBS_WC, 0.999, na.rm = T)), ]
 write.table(WC.PBS, file = "WC.PBS.100kb.tsv", quote = F, sep = "\t", row.names = F)
 ```
 
+YES!!!!!!  We now have files ontaining the regions under selection!!!!
+The following commands can find the genes in these regions.
+```bash
+# Drom
+bedtools \
+   intersect \
+   -wa \
+   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -b <(cut -f1-3 Drom.selected.100kb.tsv | sed '1d') | \
+   grep -P "\tgene\t" | \
+   sort | \
+   uniq > Drom.selected.genes.gff3
+   # Results: 5 tRNAs, 3 pseudogenes, 23 genes!
 
+# DC
+bedtools \
+   intersect \
+   -wa \
+   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -b <(cut -f1-3 DC.selected.100kb.tsv | sed '1d') | \
+   grep -P "\tgene\t" | \
+   sort | \
+   uniq > DC.selected.genes.gff3
+   # Results: no genes overlapping
+```
 
 
 
