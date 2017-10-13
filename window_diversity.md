@@ -236,7 +236,7 @@ bedtools \
    -b <(cut -f1-3 DC.PBS.100kb.tsv | sed '1d') | \
    grep -P "\tgene\t" | \
    sort | uniq > DC.PBS.genes.gff3
-   # Results: 2 tRNAs, XX genes!
+   # Results: 2 tRNAs, 10 genes!
 
 # WC PBS
 bedtools \
