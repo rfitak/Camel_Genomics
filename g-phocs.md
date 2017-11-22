@@ -6,9 +6,16 @@ Here we will use the program [G-phocs](http://compgen.cshl.edu/GPhoCS/) which wa
 # Download reference genome
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/Camelus_ferus/ARCHIVE/ANNOTATION_RELEASE.100/CHR_Un/cfe_ref_CB1_chrUn.fa.gz
 gunzip cfe_ref_CB1_chrUn.fa.gz
+mv cfe_ref_CB1_chrUn.fa CB1.fasta
+
+# Rename scaffolds to just the accession number
+sed \
+   -i \
+   -e "s/gi.*ref|//g" \
+   -e "s/| Camelus.*//g" CB1.fasta
 
 # Build FASTA index with SAMTOOLS
-
+samtools faidx CB1.fasta
 
 # Build Genome-wide BED file
 bedtools \
