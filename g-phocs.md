@@ -24,8 +24,37 @@ bedtools \
    -g CB1.fasta.fai > genome.bed
 ```
 
-2.  Now we build a BED file containing regions we want to exlcude, such as repeat elements (masked regions), X and Y scaffolds, and various annotated RNAs.
+2.  Now we build a BED file containing regions we want to exlcude, such as repeat elements (masked regions), X and Y scaffolds (see file [XY.exclude](./Data/XY.exclude)), and various annotated RNAs.
 ```bash
+# Download masked regions (repetitive elements)
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/Camelus_ferus/ARCHIVE/ANNOTATION_RELEASE.100/masking_coordinates.gz
+gunzip masking_coordinates.gz
+
+# Add masked regions to bed file of repeats
+cat \
+   <(echo "# BED header") \
+   <(cat masking_coordinates | cut -f1-3) > exclude.bed.tmp
+
+# Add XY scaffolds in bed format
+while read line
+   do
+   grep "$line" genome.bed >> exclude.bed.tmp
+done < XY.exclude
+
+# Sort and merge bed file
+cat \
+	<(echo "# BED header") \
+	<(bedtools sort -header -i exclude.bed.tmp | bedtools merge -i /dev/stdin) > exclude.bed
+
 # Download Annotation (Genome Release 100)
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/Camelus_ferus/ARCHIVE/ANNOTATION_RELEASE.100/GFF/ref_CB1_scaffolds.gff3.gz
+gunzip ref_CB1_scaffolds.gff3.gz
+
+# Add tRNA locations to bed file to regions to exclude
+grep "tRNAscan-SE.gene" ref_CB1_scaffolds.gff3 | \
+   cut -f1,4,5 | \
+   perl -ne 'chomp; @a=split("\t", $_); $a[1] = $a[1]-1; print "$a[0]\t$a[1]\t$a[2]\n"' >> exclude.bed
+
+# Remove files not needed
+rm -rf exclude.bed.tmp
 ```
