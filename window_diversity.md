@@ -203,7 +203,7 @@ WC.PBS = data[which(data$PBS_WC > quantile(data$PBS_WC, 0.999, na.rm = T)), ]
 write.table(WC.PBS, file = "WC.PBS.100kb.tsv", quote = F, sep = "\t", row.names = F)
 ```
 
-YES!!!!!!  We now have files ontaining the regions under selection!!!!
+YES!!!!!!  We now have files containing the regions under selection!!!!
 The following commands can find the genes in these regions.
 ```bash
 # Drom
