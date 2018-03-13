@@ -15,5 +15,5 @@ library(topGO)
 
 Next, we made a GO mapping file from the Blast2GO annotations in the format:  
 GeneID   GO, GO, GO  
-This mapping file can be found here: [gene2GO](./Data/gene2GO).
-There are 15,603 genes with GO annotations, and 17,175 genes in total in the reference set.
+This mapping file can be found here: [gene2GO](./Data/gene2GO).  
+There are 15,603 genes with GO annotations, and 17,175 genes in total in the reference set.  The reference list of proteins can be found here: [reference-set.protein.ids](./Data/reference-set.protein.ids).
