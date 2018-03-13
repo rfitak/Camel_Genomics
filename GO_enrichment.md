@@ -30,6 +30,9 @@ picker=function (allScore) {
 
 # Load GO database mappings
 geneID2GO <- readMappings(file = "gene2GO", sep="\t", IDsep=",")
+
+# Note: to change GO mappings to a list of GO terms with genes mapping to each:
+GO2geneID <- inverseList(geneID2GO)
 ```
 
 Great!  We have the reference data loaded and ready for use in topGO.  Next, we setup the information for the type of test we want to perform (here we just use the classic Fisher exact test).  The 'weight01' test is also recommended but beware issues with p-values since all tests are not independent.  We also load our set of test protein IDs (this file varies between enrichment analyses and only an example is shown).
