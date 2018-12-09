@@ -21,10 +21,12 @@ python genomics_general/popgenWindows.py \
    --windSize 100000 \
    --stepSize 50000 \
    --minSites 10 \
+   --writeFailedWindows \
    --genoFile input.geno.gz \
-   --outFile variation.100kb.csv.gz \
+   --analysis popFreq \
+   --roundTo 4 \
+   --outFile popFreq.100kb.csv.gz \
    --genoFormat phased \
-   --indHet \
    --exclude xy.exclude \
    --Threads 8 \
    --verbose \
@@ -58,5 +60,8 @@ python genomics_general/popgenWindows.py \
 ```
 
 ```R
-R script for calculating Tajima's D from a table of nucleotide diversity (pi) and # segragating sites
+# R script for calculating Tajima's D from a table of nucleotide diversity (pi) and # segragating sites
+
+
+
 ```
