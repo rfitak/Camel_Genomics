@@ -57,3 +57,6 @@ python genomics_general/popgenWindows.py \
    --out WC.tajimaD
 ```
 
+```R
+R script for calculating Tajima's D from a table of nucleotide diversity (pi) and # segragating sites
+```
