@@ -14,7 +14,7 @@ git clone https://github.com/simonhmartin/genomics_general.git
 python genomics_general/VCF_processing/parseVCF.py \
    --infile snps.vcf.gz \
    --outfile input.geno.gz \
-   --excludeFile xy.exclude
+   --excludeFile XY.exclude
 
 python genomics_general/popgenWindows.py \
    --windType coordinate \
@@ -27,7 +27,7 @@ python genomics_general/popgenWindows.py \
    --roundTo 4 \
    --outFile popFreq.100kb.csv.gz \
    --genoFormat phased \
-   --exclude xy.exclude \
+   --exclude XY.exclude \
    --Threads 8 \
    --verbose \
    --population Drom DROM802,Drom439,Drom795,Drom796,Drom797,Drom800_55,Drom806,Drom816,Drom820 \
