@@ -4,6 +4,7 @@
 
 ```bash
 # Download genomics windows tools
+   # OSX v10.13.6; python v2.7.15; numpy v1.15.4
 git clone https://github.com/simonhmartin/genomics_general.git
 
 # Compress and index
