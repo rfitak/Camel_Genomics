@@ -182,9 +182,9 @@ write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", 
 # Find WC outlier windows
 # This will be multi-step process.
 # Step 1:  calculate the pi log ratio in WC comapred wirth both Drom and DC, replace 0 with 0.00001 for convenience with logs
-Drom.pi = sub(0, 0.00001, data$pi_Drom)
-DC.pi = sub(0, 0.00001, data$pi_DC)
-WC.pi = sub(0, 0.00001, data$pi_WC)
+Drom.pi = ifelse(data$pi_Drom == 0, 0.00001, data$pi_Drom)
+DC.pi = ifelse(data$pi_DC == 0, 0.00001, data$pi_DC)
+WC.pi = ifelse(data$pi_WC == 0, 0.00001, data$pi_WC)
 
 logPi_WCvDrom = log(Drom.pi) - log(WC.pi)
 logPi_WCvDC = log(DC.pi) - log(WC.pi)
