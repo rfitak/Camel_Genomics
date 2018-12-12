@@ -4,6 +4,8 @@ The following code is for calculating various measures of genetic variation acro
 First, install Simon Martin's 'genomics_general' toolset:
 ```bash
 git clone https://github.com/simonhmartin/genomics_general.git
+
+# Note: I am using OSX v10.13.6; python v2.7.15; numpy v1.15.4
 ```
 
 Next, we need to prepare our VCF file of SNPs by compression and index it.  This should be done using the [Samtools](http://www.htslib.org) suite of tools.
@@ -21,10 +23,10 @@ Convert the VCF file.
 python genomics_general/VCF_processing/parseVCF.py \
    --infile snps.vcf.gz \
    --outfile input.geno.gz \
-   --excludeFile xy.exclude
+   --excludeFile XY.exclude
 ```
 Notes:
-- --exclude xy.exclude :: a file listing the scaffold IDs to exclude.  These are putative X and Y scaffolds identified previously
+- --exclude XY.exclude :: a file listing the scaffold IDs to exclude.  These are putative X and Y scaffolds identified previously - see file here [XY.exclude](.Data/XY.exclude)
 -  If you add ".gz" to the output file, it is automatically compressed using gzip.
 - We began with 10819573 SNPs, but reduced to 10581849 SNPs after removing the X and Y scaffold loci
 
