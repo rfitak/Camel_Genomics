@@ -34,7 +34,7 @@ Now we are ready to calculate the various metrics!!!
 The following script will be repeated multiple times using the ```--analysis``` flag to calculate various measures of genetic variation and differentiation.  We will combine all the data at the end into a single file of results.
 - *__popFreq__* will calculate nucleotide diversity (pi), Watterson's theta, and Tajima's D for each population
 - *__indHet__* will calculate heterozygosity for each individual
-- *__popDist*__* will calculate xxxx for each individual
+- *__popDist__* will calculate xxxx for each individual
 - *__popPairDist__* will calculate divergence (Dxy) and (Fst) for each population pair
 
 ```bash
@@ -152,10 +152,10 @@ Last, we will combine these results together in a final data table:
 ```bash
 paste \
    -d"," \
-   <(gunzip -c popFreq.100kb.csv.gz)
-   <gunzip -c indHet.100kb.csv.gz | cut -d"," -f6-) \
-   <gunzip -c popDist.100kb.csv.gz | cut -d"," -f6-) \
-   <gunzip -c popPairDist.100kb.csv.gz | cut -d"," -f6-) | \
+   <(gunzip -c popFreq.100kb.csv.gz) \
+   <(gunzip -c indHet.100kb.csv.gz | cut -d"," -f6-) \
+   <(gunzip -c popDist.100kb.csv.gz | cut -d"," -f6-) \
+   <(gunzip -c popPairDist.100kb.csv.gz | cut -d"," -f6-) | \
    gzip > Final.100kb.csv.gz
 ```
 
@@ -164,7 +164,7 @@ paste \
 Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels.  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  Later, we will add the results of the population branch statistic to make one big file!
 ```R
 # First load the window results file
-input = read.csv(gzfile("popFReq.100kb.csv.gz"), header = T)
+input = read.csv(gzfile("Final.100kb.csv.gz"), header = T)
    # 39660 windows in total
    
 # Remove windows with less than 10 sites
