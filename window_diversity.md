@@ -34,7 +34,7 @@ Now we are ready to calculate the various metrics!!!
 The following script will be repeated multiple times using the ```--analysis``` flag to calculate various measures of genetic variation and differentiation.  We will combine all the data at the end into a single file of results.
 - *__popFreq__* will calculate nucleotide diversity (pi), Watterson's theta, and Tajima's D for each population
 - *__indHet__* will calculate heterozygosity for each individual
-- *__popDist__* will calculate xxxx for each individual
+- *__popDist__* will calculate pi for each population
 - *__popPairDist__* will calculate divergence (Dxy) and (Fst) for each population pair
 
 ```bash
@@ -125,9 +125,8 @@ python genomics_general/popgenWindows.py \
    --genoFile input.geno.gz \
    --outFile variation.100kb.csv.gz \
    --genoFormat phased \
-   --indHet \
    --exclude xy.exclude \
-   --Threads 8 \
+   --Threads 2 \
    --verbose \
    --population Drom DROM802,Drom439,Drom795,Drom796,Drom797,Drom800_55,Drom806,Drom816,Drom820 \
    --population DC DC158_53,DC269,DC399,DC400,DC402,DC408,DC423 \
@@ -160,8 +159,9 @@ paste \
 ```
 
 
-### Find windows in Drom and WC under positive selection
-Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels.  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  Later, we will add the results of the population branch statistic to make one big file!
+### Find windows in Drom, DC, and WC under positive selection
+Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels (for Drom and DC).  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  In WC, we will take a bit of a different approach.  First, we will look for windows with a much higher pi in the domestic species than in wild camels, and overlap that with windows in wild camels that also have a very negative Tajima's D. Later, we will add the results of the population branch statistic to make one big file!
+
 ```R
 # First load the window results file
 input = read.csv(gzfile("Final.100kb.csv.gz"), header = T)
@@ -178,6 +178,16 @@ write.table(Drom.selected, file = "Drom.selected.100kb.tsv", quote = F, sep = "\
 # Find DC outlier windows
 DC.selected = data[which(data$pi_DC < quantile(data$pi_DC, 0.005) & data$dxy_DC_WC > quantile(data$dxy_DC_WC, 0.995)), ]
 write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
+
+# Find WC outlier windows
+# This will be multi-step process.
+# Step 1:  calculate the pi log ratio in WC comapred wirth both Drom and DC, replace 0 with 0.00001 for convenience with logs
+Drom.pi = sub(0, 0.00001, data$pi_Drom)
+DC.pi = sub(0, 0.00001, data$pi_DC)
+WC.pi = sub(0, 0.00001, data$pi_WC)
+
+logPi_WCvDrom = log(Drom.pi) - log(WC.pi)
+logPi_WCvDC = log(DC.pi) - log(WC.pi)
 
 
 ```
