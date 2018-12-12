@@ -31,11 +31,11 @@ Notes:
 - We began with 10819573 SNPs, but reduced to 10581849 SNPs after removing the X and Y scaffold loci
 
 Now we are ready to calculate the various metrics!!!
-The following script will be repeated multiple times using the *--analysis* flag to calculate various measures of genetic variation and differentiation.  We will combine all the data at the end into a single file of results.
-- *__popFreq*__ will calculate nucleotide diversity (pi), Watterson's theta, and Tajima's D for each population
-- *__indHet*__ will calculate heterozygosity for each individual
-- *__popDist*__ will calculate xxxx for each individual
-- *__popPairDist*__ will calculate divergence (Dxy) and (Fst) for each population pair
+The following script will be repeated multiple times using the ```--analysis``` flag to calculate various measures of genetic variation and differentiation.  We will combine all the data at the end into a single file of results.
+- *__popFreq__* will calculate nucleotide diversity (pi), Watterson's theta, and Tajima's D for each population
+- *__indHet__* will calculate heterozygosity for each individual
+- *__popDist*__* will calculate xxxx for each individual
+- *__popPairDist__* will calculate divergence (Dxy) and (Fst) for each population pair
 
 ```bash
 # Must be run from the same location as the genomics.py module
