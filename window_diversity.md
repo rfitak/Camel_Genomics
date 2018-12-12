@@ -26,12 +26,97 @@ python genomics_general/VCF_processing/parseVCF.py \
    --excludeFile XY.exclude
 ```
 Notes:
-- --exclude XY.exclude :: a file listing the scaffold IDs to exclude.  These are putative X and Y scaffolds identified previously - see file here [XY.exclude](.Data/XY.exclude)
+- --exclude XY.exclude :: a file listing the scaffold IDs to exclude.  These are putative X and Y scaffolds identified previously - see file here [XY.exclude](./Data/XY.exclude)
 -  If you add ".gz" to the output file, it is automatically compressed using gzip.
 - We began with 10819573 SNPs, but reduced to 10581849 SNPs after removing the X and Y scaffold loci
 
-The following script will calculate individual heterozygosity, pi (within populations) and divergence (Dxy, between populations).
+Now we are ready to calculate the various metrics!!!
+The following script will be repeated multiple times using the *--analysis* flag to calculate various measures of genetic variation and differentiation.  We will combine all the data at the end into a single file of results.
+- *__popFreq*__ will calculate nucleotide diversity (pi), Watterson's theta, and Tajima's D for each population
+- *__indHet*__ will calculate heterozygosity for each individual
+- *__popDist*__ will calculate xxxx for each individual
+- *__popPairDist*__ will calculate divergence (Dxy) and (Fst) for each population pair
+
 ```bash
+# Must be run from the same location as the genomics.py module
+
+# popFreq
+python2.7 popgenWindows.py \
+   --windType coordinate \
+   --windSize 100000 \
+   --stepSize 50000 \
+   --minSites 10 \
+   --writeFailedWindows \
+   --genoFile ../input.geno.gz \
+   --analysis popFreq \
+   --roundTo 4 \
+   --outFile popFreq.100kb.csv.gz \
+   --genoFormat phased \
+   --exclude ../XY.exclude \
+   --Threads 2 \
+   --verbose \
+   --population Drom DROM802,Drom439,Drom795,Drom796,Drom797,Drom800_55,Drom806,Drom816,Drom820 \
+   --population DC DC158_53,DC269,DC399,DC400,DC402,DC408,DC423 \
+   --population WC WC214,WC216,WC218,WC219,WC220,WC247,WC303_108,WC304,WC305
+
+# indHet
+python2.7 popgenWindows.py \
+   --windType coordinate \
+   --windSize 100000 \
+   --stepSize 50000 \
+   --minSites 10 \
+   --writeFailedWindows \
+   --genoFile ../input.geno.gz \
+   --analysis indHet \
+   --roundTo 4 \
+   --outFile indHet.100kb.csv.gz \
+   --genoFormat phased \
+   --exclude ../XY.exclude \
+   --Threads 2 \
+   --verbose \
+   --population Drom DROM802,Drom439,Drom795,Drom796,Drom797,Drom800_55,Drom806,Drom816,Drom820 \
+   --population DC DC158_53,DC269,DC399,DC400,DC402,DC408,DC423 \
+   --population WC WC214,WC216,WC218,WC219,WC220,WC247,WC303_108,WC304,WC305
+
+# popDist
+python2.7 popgenWindows.py \
+   --windType coordinate \
+   --windSize 100000 \
+   --stepSize 50000 \
+   --minSites 10 \
+   --writeFailedWindows \
+   --genoFile ../input.geno.gz \
+   --analysis popDist \
+   --roundTo 4 \
+   --outFile popDist.100kb.csv.gz \
+   --genoFormat phased \
+   --exclude ../XY.exclude \
+   --Threads 2 \
+   --verbose \
+   --population Drom DROM802,Drom439,Drom795,Drom796,Drom797,Drom800_55,Drom806,Drom816,Drom820 \
+   --population DC DC158_53,DC269,DC399,DC400,DC402,DC408,DC423 \
+   --population WC WC214,WC216,WC218,WC219,WC220,WC247,WC303_108,WC304,WC305
+
+# popPairDist
+python2.7 popgenWindows.py \
+   --windType coordinate \
+   --windSize 100000 \
+   --stepSize 50000 \
+   --minSites 10 \
+   --writeFailedWindows \
+   --genoFile ../input.geno.gz \
+   --analysis popPairDist \
+   --roundTo 4 \
+   --outFile popPairDist.100kb.csv.gz \
+   --genoFormat phased \
+   --exclude ../XY.exclude \
+   --Threads 2 \
+   --verbose \
+   --population Drom DROM802,Drom439,Drom795,Drom796,Drom797,Drom800_55,Drom806,Drom816,Drom820 \
+   --population DC DC158_53,DC269,DC399,DC400,DC402,DC408,DC423 \
+   --population WC WC214,WC216,WC218,WC219,WC220,WC247,WC303_108,WC304,WC305
+   
+# Old version...
 python genomics_general/popgenWindows.py \
    --windType coordinate \
    --windSize 100000 \
@@ -54,11 +139,51 @@ Parameters explained:
 - --stepSize 50000 :: window moves in 50kb steps
 - --minSites 10 :: at least 10 SNPs must be in a window to calcualte statistics
 - --genoFormat phased :: input format, only change if you set this in the previous step to be different
-- --indHet :: calculate individual level heterozygosity
-- --exclude xy.exclude :: remove scaffolds in this file (although it was also performed in the previous step)
-- --Threads 8 :: use 8 threads, this took only 9 minutes using 8 threads
+- --writeFailedWindows :: record windows that fail for having less than 10 sites
+- --analysis popFreq :: choise of which measurements to record
+- --roundTo 4 :: round to four digits
+- --exclude XY.exclude :: remove scaffolds in this file (although it was also performed in the previous step)
+- --Threads 2 :: use 2 threads, this took only ~15 minutes using 2 threads
 - --verbose :: provide detailed run time log
 - --population XX 1,2,3,... :: the population ID and comma-separated list of samples.
+
+
+Last, we will combine these results together in a final data table:
+```bash
+paste \
+   -d"," \
+   <(gunzip -c popFreq.100kb.csv.gz)
+   <gunzip -c indHet.100kb.csv.gz | cut -d"," -f6-) \
+   <gunzip -c popDist.100kb.csv.gz | cut -d"," -f6-) \
+   <gunzip -c popPairDist.100kb.csv.gz | cut -d"," -f6-) | \
+   gzip > Final.100kb.csv.gz
+```
+
+
+### Find windows in Drom and WC under positive selection
+Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels.  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  Later, we will add the results of the population branch statistic to make one big file!
+```R
+# First load the window results file
+input = read.csv(gzfile("popFReq.100kb.csv.gz"), header = T)
+   # 39660 windows in total
+   
+# Remove windows with less than 10 sites
+data = subset(input, sites >= 10)
+   # 37030 windows passed (removed 2630 windows)
+
+# Find Drom outlier windows
+Drom.selected = data[which(data$thetaPi_Drom < quantile(data$thetaPi_Drom, 0.005) & data$dxy_Drom_WC > quantile(data$dxy_Drom_WC, 0.995)), ]
+write.table(Drom.selected, file = "Drom.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
+
+# Find DC outlier windows
+DC.selected = data[which(data$pi_DC < quantile(data$pi_DC, 0.005) & data$dxy_DC_WC > quantile(data$dxy_DC_WC, 0.995)), ]
+write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
+
+
+```
+
+
+
 
 
 ### Find windows under positive selection
@@ -99,7 +224,7 @@ WC = c("WC214", "WC216", "WC218", "WC219", "WC220", "WC247", "WC303_108", "WC304
 # Setup empty vector of new Reynolds' Fst
 Reynolds.fst = vector()
 
-# Now we will cycle throug each window in 'data'
+# Now we will cycle through each window in 'data'
 for (w in 1:nrow(data)){
    # Get snps in the first window
    chrom = as.character(data$scaffold[w])
