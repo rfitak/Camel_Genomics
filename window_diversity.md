@@ -160,7 +160,7 @@ paste \
 
 
 ### Find windows in Drom, DC, and WC under positive selection
-Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels (for Drom and DC).  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  In WC, we will take a bit of a different approach.  First, we will look for windows with a much higher pi in the domestic species than in wild camels, and overlap that with windows in wild camels that also have a very negative Tajima's D. Later, we will add the results of the population branch statistic to make one big file!
+Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels (for Drom and DC).  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  In WC, we will take a bit of a different approach.  First, we will look for windows with a much higher pi in the domestic species than in wild camels, and overlap that with windows in wild camels that also have a very negative Tajima's D. This also implies relaxes selection in the domestic species.  Later, we will add the results of the population branch statistic to make one big file!
 
 ```R
 # First load the window results file
@@ -185,11 +185,13 @@ write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", 
 Drom.pi = ifelse(data$pi_Drom == 0, 0.00001, data$pi_Drom)
 DC.pi = ifelse(data$pi_DC == 0, 0.00001, data$pi_DC)
 WC.pi = ifelse(data$pi_WC == 0, 0.00001, data$pi_WC)
-
 logPi_WCvDrom = log(Drom.pi) - log(WC.pi)
 logPi_WCvDC = log(DC.pi) - log(WC.pi)
 
+# Find overlapping WC windows
+WC.selected = data[which(logPi_WCvDrom > quantile(logPi_WCvDrom, 0.995) & logPi_WCvDC > quantile(logPi_WCvDC, 0.995) & data$TajD_WC < -2), ]
 
+write.table(WC.selected, file = "WC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
 ```
 
 
