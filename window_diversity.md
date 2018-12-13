@@ -116,7 +116,7 @@ python2.7 popgenWindows.py \
    --population DC DC158_53,DC269,DC399,DC400,DC402,DC408,DC423 \
    --population WC WC214,WC216,WC218,WC219,WC220,WC247,WC303_108,WC304,WC305
    
-# Old version...
+# Old version... (for reference, do not use for current version)
 python genomics_general/popgenWindows.py \
    --windType coordinate \
    --windSize 100000 \
@@ -181,7 +181,7 @@ write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", 
 
 # Find WC outlier windows
 # This will be multi-step process.
-# Step 1:  calculate the pi log ratio in WC comapred wirth both Drom and DC, replace 0 with 0.00001 for convenience with logs
+# Step 1:  calculate the pi log ratio in WC comapred with both Drom and DC, replace 0 with 0.00001 for convenience with logs
 Drom.pi = ifelse(data$pi_Drom == 0, 0.00001, data$pi_Drom)
 DC.pi = ifelse(data$pi_DC == 0, 0.00001, data$pi_DC)
 WC.pi = ifelse(data$pi_WC == 0, 0.00001, data$pi_WC)
@@ -190,16 +190,13 @@ logPi_WCvDC = log(DC.pi) - log(WC.pi)
 
 # Find overlapping WC windows
 WC.selected = data[which(logPi_WCvDrom > quantile(logPi_WCvDrom, 0.995) & logPi_WCvDC > quantile(logPi_WCvDC, 0.995) & data$TajD_WC < -2), ]
-
 write.table(WC.selected, file = "WC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
 ```
+This resulted in three windows passing the criteria for selection.  Below we will add the detection of selection using the population branch statistics (PBS), and also find the genes that overlap these regions.
 
 
-
-
-
-### Find windows under positive selection
-In this section we will find the extreme outlier windows to identify regions under positive selection.  We will also add the calculation of the population branch statistic (PBS) to further identify positive selection in the DC or WC lineages.  See [Yi et al. 2010 Science](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3711608/) for the original derivation.  It is actually quite simple.
+## Find windows under positive selection using the PBS
+In this section we will find the extreme outlier windows to identify regions under positive selection by calculating the population branch statistic (PBS) to further identify positive selection in the DC or WC lineages.  See [Yi et al. 2010 Science](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3711608/) for the original derivation.  It is actually quite simple.
 Most of this analysis will be done in R.
 
 The function below calculates the PBS statistic.  The input is a vector of three Fst measures. The first Fst is the population of interest compared with the sister population, the second is population of interest compared with the outgroup, and the last Fst is the sister population compared with the outgroup.  The function returns the PBS for the population of interest.
@@ -226,7 +223,7 @@ Unfortunately, the PBS is defined in terms of an Fst value calculated according 
 ```R
 # First load the genotype file and window results file
 genos = read.table(gzfile("input.geno.gz"), sep = "\t", header = T, comment.char = "", stringsAsFactors = F)
-data = read.csv(gzfile("variation.100kb.csv.gz"), header = T)
+data = subset(read.csv(gzfile("Final.100kb.csv.gz"), header = T), sites >= 10)
 
 # Make list of individuals in each population
 Drom = c("DROM802", "Drom439", "Drom795", "Drom796", "Drom797", "Drom800_55", "Drom806", "Drom816", "Drom820")
@@ -325,14 +322,6 @@ data = cbind(data, PBS_DC, PBS_WC)
 # Save the new data table
 write.table(data, file = "Final-table.100kb.tsv", quote = F, sep = "\t", row.names = F)
 
-# Find Drom outlier windows
-Drom.selected = data[which(data$pi_Drom < quantile(data$pi_Drom, 0.005) & data$dxy_Drom_WC > quantile(data$dxy_Drom_WC, 0.995)), ]
-write.table(Drom.selected, file = "Drom.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
-
-# Find DC outlier windows
-DC.selected = data[which(data$pi_DC < quantile(data$pi_DC, 0.005) & data$dxy_DC_WC > quantile(data$dxy_DC_WC, 0.995)), ]
-write.table(DC.selected, file = "DC.selected.100kb.tsv", quote = F, sep = "\t", row.names = F)
-
 # DC PBS outlier windows
 DC.PBS = data[which(data$PBS_DC > quantile(data$PBS_DC, 0.999, na.rm = T)), ]
 write.table(DC.PBS, file = "DC.PBS.100kb.tsv", quote = F, sep = "\t", row.names = F)
@@ -349,7 +338,7 @@ The following commands can find the genes in these regions.
 bedtools \
    intersect \
    -wa \
-   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -a ref_CB1_scaffolds.gff3 \
    -b <(cut -f1-3 Drom.selected.100kb.tsv | sed '1d') | \
    grep -P "\tgene\t" | \
    sort | \
@@ -360,7 +349,7 @@ bedtools \
 bedtools \
    intersect \
    -wa \
-   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -a ref_CB1_scaffolds.gff3 \
    -b <(cut -f1-3 DC.selected.100kb.tsv | sed '1d') | \
    grep -P "\tgene\t" | \
    sort | \
@@ -371,7 +360,7 @@ bedtools \
 bedtools \
    intersect \
    -wa \
-   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -a ref_CB1_scaffolds.gff3 \
    -b <(cut -f1-3 DC.PBS.100kb.tsv | sed '1d') | \
    grep -P "\tgene\t" | \
    sort | uniq > DC.PBS.genes.gff3
@@ -381,7 +370,7 @@ bedtools \
 bedtools \
    intersect \
    -wa \
-   -a /wrk/rfitak/DONOTREMOVE/SNP-ANALYSIS/ref_CB1_scaffolds.gff3 \
+   -a ref_CB1_scaffolds.gff3 \
    -b <(cut -f1-3 WC.PBS.100kb.tsv | sed '1d') | \
    grep -P "\tgene\t" | \
    sort | uniq > WC.PBS.genes.gff3
