@@ -1,8 +1,7 @@
-<h3><p align="center">Supplementary Material for:</p></h3>
-<center><h2>Genomic signatures of domestication in Old World camels</h2> </center>
+<h3><p align="center">Supplementary Methods for:</p></h3>
+<h2><p align="center">Genomic signatures of domestication in Old World camels</p></h2>
 
-<center><I><h5>Robert R. Fitak<sup>1,2</sup>, Elmira Mohandesan<sup>2,3</sup>, Jukka Corander<sup>4-6</sup>, Adiya Yadamsuren<sup>7,8</sup>, Battsetseg Chuluunbat<sup>9</sup>, Omer Abdelhadi<sup>10</sup>, Abdul Raziq<sup>11</sup>, Peter Nagy<sup>12</sup>, Chris Walzer<sup>13,14</sup>, Bernard Faye<sup>15</sup>, Pamela A. Burger<sup>2,14</sup></h5></I></center>
-
+<I><h5>Robert R. Fitak<sup>1,2</sup>, Elmira Mohandesan<sup>2,3</sup>, Jukka Corander<sup>4-6</sup>, Adiya Yadamsuren<sup>7,8</sup>, Battsetseg Chuluunbat<sup>9</sup>, Omer Abdelhadi<sup>10</sup>, Abdul Raziq<sup>11</sup>, Peter Nagy<sup>12</sup>, Chris Walzer<sup>13,14</sup>, Bernard Faye<sup>15</sup>, Pamela A. Burger<sup>2,14</sup></h5></I>
 
 1. Department of Biology, Duke University, Durham, NC 27708 USA.
 2. Institute of Population Genetics, Vetmeduni Vienna, Veterinärplatz 1, 1210 Vienna, Austria.
@@ -20,12 +19,9 @@
 14. Research Institute of Wildlife Ecology, Vetmeduni Vienna, Savoyenstraße 1, 1160, Vienna, Austria.
 15. CIRAD-ES, UMR 112, Campus International de Baillarguet, TA C/112A, 34398, Montpellier, France.
 
-
-
-<center>
-### Table of Contents
-# Camel Genomics
-Code for the analysis of 25 Camel genomes
+This GitHub repository contains a summary of the various code, software, and data analysis pipelines used for the aforementioned study of 25 camel genomes. The contents represented here are only ot be used as an example and not intended to be comeprehensive.
+  
+<h2><p align="center">Table of Contents</p></h2>
 
 [Read processing, trimming, and mapping](./read_processing.md)
 
