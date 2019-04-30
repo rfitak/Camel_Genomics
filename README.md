@@ -46,7 +46,7 @@ Blast2GO Annotation (TBD)
 [Recreating demographic history using G-PHOCS](./g-phocs.md) \(Currently not used\)
 
 
-## Summary of the Programs/Software Used in this Study
+<h2><p align="center">Summary of the Programs/Software Used in this Study</p></h2>
 Program | Version | Citation |
 | --- | --- | --- |
 | POPOOLATION | 1.2.2 | Kofler, R. et al. PoPoolation: a toolbox for population genetic analysis of next generation sequencing data from pooled individuals. PLoS One 6, e15925 (2011). |
