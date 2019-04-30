@@ -128,4 +128,5 @@ java -Xmx20g -jar GenomeAnalysisTK.jar \
    -model USE_READS
 ```
 <br>
+
 ### Sorted, cleaned, realigned BAM files are ready to go!!!
