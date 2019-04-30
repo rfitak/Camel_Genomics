@@ -19,7 +19,9 @@
 14. Research Institute of Wildlife Ecology, Vetmeduni Vienna, Savoyenstraße 1, 1160, Vienna, Austria.
 15. CIRAD-ES, UMR 112, Campus International de Baillarguet, TA C/112A, 34398, Montpellier, France.
 
+---
 This GitHub repository contains a summary of the various code, software, and data analysis pipelines used for the aforementioned study of 25 camel genomes. The contents represented here are only ot be used as an example and not intended to be comeprehensive.
+---
   
 <h2><p align="center">Table of Contents</p></h2>
 
