@@ -24,6 +24,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 ***
   
 <h2><p align="center">Table of Contents</p></h2>
+<div>
  
 [Read processing, trimming, and mapping](./read_processing.md)
 
@@ -45,6 +46,7 @@ Blast2GO Annotation (TBD)
 
 [Recreating demographic history using G-PHOCS](./g-phocs.md) \(Currently not used\)
 
+</div>
 
 <h2><p align="center">Summary of the Programs/Software Used in this Study</p></h2>  
 
