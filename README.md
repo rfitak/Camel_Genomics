@@ -24,7 +24,6 @@ ___This GitHub repository contains a summary of the various code, software, and 
 ***
   
 <h2><p align="center">Table of Contents</p></h2>
-<div align="Center">
  
 [Read processing, trimming, and mapping](./read_processing.md)
 
@@ -45,11 +44,11 @@ Blast2GO Annotation (TBD)
 [GO Term Enrichment](./GO_enrichment.md)
 
 [Recreating demographic history using G-PHOCS](./g-phocs.md) \(Currently not used\)
-</div>
 
 
-<h2><p align="center">Summary of the Programs/Software Used in this Study</p></h2>
-Program | Version | Citation |
+<h2><p align="center">Summary of the Programs/Software Used in this Study</p></h2>  
+
+| Program | Version | Citation |
 | --- | --- | --- |
 | POPOOLATION | 1.2.2 | Kofler, R. et al. PoPoolation: a toolbox for population genetic analysis of next generation sequencing data from pooled individuals. PLoS One 6, e15925 (2011). |
 | BWA | 0.6.2 | Li, H. & Durbin, R. Fast and accurate short read alignment with Burrows-Wheeler transform. Bioinformatics 25, 1754-1760 (2009). |
