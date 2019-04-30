@@ -1,7 +1,7 @@
 # Camel Genomics
 Code for the analysis of 25 Camel genomes
 
-Read Processing/Trimming/Mapping (TBD)
+[Read processing, trimming, and mapping](./read_processing.md)
 
 Sex Chromosome Identification (TBD)
 
