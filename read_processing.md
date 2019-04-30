@@ -1,4 +1,4 @@
-## Read Processing and Alignment
+# Read Processing and Alignment
 _Read trimming using POPOOLATION 1.2.2_
 
 ```bash
