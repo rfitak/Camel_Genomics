@@ -22,41 +22,6 @@ Blast2GO Annotation (TBD)
 [Recreating demographic history using G-PHOCS](./g-phocs.md) \(Currently not used\)
 
 
-
-
-## Tables
-Supplementary tables SX - SY are available as a separate file in spreadsheet format.
-
-## Figures
-<sup><sup>__Figure S1__ Map illustrating the samples used in this study for genome sequencing.  The size of each circle is proportional to the sample size for that location.  Colors correspond to the three Old World camel species.</sup></sup>
-<p align="center">
-<img src="/Users/rfitak/Desktop/CAMEL/FigS1.png" alt="Figure S1" width="600"/>
-</p>
-
-<div style="page-break-after: always;"></div>
-
-<sup><sup>__Figure S2__ The number of raw, trimmed, and mapped bases for each individual.  See Table S1 for the list of sequenced camels.</sup></sup>
-<p align="center">
-<img src="/Users/rfitak/Desktop/CAMEL/FigS2.png" alt="Figure S2" width="600"/>
-</p>
-
-<div style="page-break-after: always;"></div>
-
-<sup><sup>__Figure S3__ Determining putative X (A & B) and Y (C & D) chromosome scaffolds.  In (A & C), the total length of scaffolds that align to the _Bos taurus_ reference sex chromosome are ordered by the proportion of the aligned scaffold length.  Only scaffolds with a significant coverage difference between males and females (Wilcoxon Rank Sum test; p < 0.05; see ___Methods___ in the main text) are shown. The dotted, horizontal red line is the length of the reference _B. taurus_ sex chromosome. A final cutoff of 0.20 for the aligned proportion was employed.  In (B & D), the coverage ratio (coverage of putative sex chromosome scaffolds relative to genome-wide average) for females (black) and males (red) are shown across 1000 bp non-overlapping windows.  Notice that for the putative X scaffolds (B), female coverage is approximately the same as the genome-wide background, whereas males are roughly half the genome-wide background. For the putative Y scaffolds (D), notice that male coverage is approximately half the genome-wide background whereas female coverage is zero.</sup></sup>
-<p align="center">
-<img src="/Users/rfitak/Desktop/CAMEL/FigS3.png" alt="Figure S3" width="600"/>
-</p>
-
-<div style="page-break-after: always;"></div>
-
-<sup><sup>__Figure S4__ Pairwise plots of the first four principal components (PC) - _Camelus dromedarius_ (black), _C. bactrianus_ (red), and _C. ferus_ (blue).  See ___Fig 1c___ in the main text for a full-scale view of the first two PCs.</sup></sup>
-<p align="center">
-<img src="/Users/rfitak/Desktop/CAMEL/FigS4.png" alt="Figure S4" width="600"/>
-</p>
-
-<div style="page-break-after: always;"></div>
-
-
 ## Summary of the Programs/Software Used in this Study
 Program | Version | Citation |
 | --- | --- | --- |
