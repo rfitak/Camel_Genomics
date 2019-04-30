@@ -24,7 +24,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 ***
   
 <h2><p align="center">Table of Contents</p></h2>
-<div>
+<div align="center">
  
 [Read processing, trimming, and mapping](./read_processing.md)
 
