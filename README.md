@@ -1,22 +1,26 @@
-<center> <h3>Supplementary Material for:</h3> </center>
-<center> <h2>Genomic signatures of domestication in Old World camels</h2> </center>
+<h3><p align="center">Supplementary Material for:</p></h3>
+<center><h2>Genomic signatures of domestication in Old World camels</h2> </center>
 
-<center> <I><h5>Robert R. Fitak<sup>1</sup>, Elmira Mohandesan<sup>2</sup>, Jukka Corander<sup>3-5</sup>, Adiya Yadamsuren<sup>6</sup>, Battsetseg Chuluunbat<sup>7</sup>, Omer Abdelhadi<sup>8</sup>, Abdul Raziq<sup>9</sup>, Peter Nagy<sup>10</sup>, Chris Walzer<sup>11</sup>, Bernard Faye<sup>12</sup>, Pamela A. Burger<sup>13,14</sup></h5></I></center>
+<center><I><h5>Robert R. Fitak<sup>1,2</sup>, Elmira Mohandesan<sup>2,3</sup>, Jukka Corander<sup>4-6</sup>, Adiya Yadamsuren<sup>7,8</sup>, Battsetseg Chuluunbat<sup>9</sup>, Omer Abdelhadi<sup>10</sup>, Abdul Raziq<sup>11</sup>, Peter Nagy<sup>12</sup>, Chris Walzer<sup>13,14</sup>, Bernard Faye<sup>15</sup>, Pamela A. Burger<sup>2,14</sup></h5></I></center>
 
-1. Department of Biology, Duke University, Durham, NC 27708 USA
-2. Institute for Evolutionary Anthropology, University of Vienna, Althanstrasse 14, 1090, Vienna, Austria
-3. Wellcome Trust Sanger Institute, Hinxton, UK
-4. Helsinki Institute for Information Technology, Department of Mathematics and Statistics, University of Helsinki, FIN-00014, Helsinki, Finland
-5. Department of Biostatistics, University of Oslo, N-0317, Oslo, Norway
-6. Mammalian Ecology Laboratory, Institute of Biology, Mongolian Academy of Sciences, Peace avenue-54b, Bayanzurh district, Ulaanbaatar, 210351, Mongolia
-7. Laboratory of Genetics, Institute of Biology, Mongolian Academy of Sciences, Peace avenue-54b, Bayanzurh district, Ulaanbaatar, 210351, Mongolia
-8. University of Khartoum, Department for Meat Sciences, Khartoum, Sudan
-9. Lasbela University of Agriculture, Water and Marine Sciences, Regional Cooperation for Development (RCD) Highway, Uthal, Pakistan
-10. Farm and Veterinary Department, Emirates Industry for Camel Milk and Products, PO Box 294239, Dubai, Umm Nahad, United Arab Emirates
-11. International Takhi Group - Mongolia, Baigal Ordon, Ulaanbaatar, Mongolia.
-12. CIRAD-ES, UMR 112, Campus International de Baillarguet, TA C/112A, 34398, Montpellier, France
-13. Research Institute of Wildlife Ecology, Vetmeduni Vienna, Savoyenstraße 1, 1160, Vienna, Austria
-14. Institute of Population Genetics, Vetmeduni Vienna, Veterinaerplatz 1, 1210 Vienna, Austria
+
+1. Department of Biology, Duke University, Durham, NC 27708 USA.
+2. Institute of Population Genetics, Vetmeduni Vienna, Veterinärplatz 1, 1210 Vienna, Austria.
+3. Institute for Evolutionary Anthropology, University of Vienna, Althanstrasse 14, 1090, Vienna, Austria.
+4. Wellcome Trust Sanger Institute, Hinxton, UK.
+5. Helsinki Institute for Information Technology, Department of Mathematics and Statistics, University of Helsinki, FIN-00014, Helsinki, Finland.
+6. Department of Biostatistics, University of Oslo, N-0317, Oslo, Norway.
+7. Institute of Remote Sensing and Digital Earth, Chinese Academy of Sciences, Jia No.20 North, DaTun road, ChaoYang District, Beijing, China.
+8. Mammalian Ecology Laboratory, Institute of General and Experimental Biology, Mongolian Academy of Sciences, Peace avenue-54b, Bayanzurh District, Ulaanbaatar, 210351, Mongolia.
+9. Laboratory of Genetics, Institute of General and Experimental Biology, Mongolian Academy of Sciences, Peace avenue-54b, Bayarzurh District, Ulaanbaatar, 210351, Mongolia.
+ 10. University of Khartoum, Department for Meat Sciences, Khartoum, Sudan.
+11. Lasbela University of Agriculture, Water and Marine Sciences, Regional Cooperation for Development (RCD) Highway, Uthal, Pakistan.
+12. Farm and Veterinary Department, Emirates Industry for Camel Milk and Products, PO Box 294236, Dubai, Umm Nahad, United Arab Emirates.
+13. Wildlife Conservation Society, Wildlife Health Program, Bronx, New York, USA.
+14. Research Institute of Wildlife Ecology, Vetmeduni Vienna, Savoyenstraße 1, 1160, Vienna, Austria.
+15. CIRAD-ES, UMR 112, Campus International de Baillarguet, TA C/112A, 34398, Montpellier, France.
+
+
 
 <center>
 ### Table of Contents
