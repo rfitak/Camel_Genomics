@@ -24,7 +24,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 ***
   
 <h2><p align="center">Table of Contents</p></h2>
-<p align="center">
+<div align="Center">
 [Read processing, trimming, and mapping](./read_processing.md)
 
 Sex Chromosome Identification (TBD)
@@ -44,7 +44,7 @@ Blast2GO Annotation (TBD)
 [GO Term Enrichment](./GO_enrichment.md)
 
 [Recreating demographic history using G-PHOCS](./g-phocs.md) \(Currently not used\)
-</p>
+</div>
 
 <h2><p align="center">Summary of the Programs/Software Used in this Study</p></h2>
 Program | Version | Citation |
