@@ -48,6 +48,8 @@ Blast2GO Annotation (TBD)
 
 </div>
 
+***
+
 <h2><p align="center">Summary of the Programs/Software Used in this Study</p></h2>  
 
 | Program | Version | Citation |
