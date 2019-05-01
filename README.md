@@ -21,7 +21,9 @@
 
 ***
 ___This GitHub repository contains a summary of the various code, software, and data analysis pipelines used for the aforementioned study of 25 camel genomes. The contents represented here are only to be used as an example and not intended to be comeprehensive. The authors make no representation about the suitability or accuracy of this code, software, or data for any purpose, and make no warranties, either expressed or implied, for a particular purpose or that the use of this software or data will not infringe any third party patents, copyrights, trademarks, or other rights. The code, software and data are provided "as is". All content is hereby registered under the GNU General Public License v2.0, see [LICENSE](./LICENSE). Any publication that significantly relies upon the use of the content generated herein shall appropriately cite:___
+
 <p align="center">Fitak et al. (in prep.) Genomic signatures of domestication in Old World camels. TBD</p>
+
 ***
   
 <h2><p align="center">Table of Contents</p></h2>
