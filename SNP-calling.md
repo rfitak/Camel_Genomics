@@ -455,7 +455,17 @@ java -Xmx20g -jar GenomeAnalysisTK.jar \
 	-o All.raw.MIXED.vcf
 	# Results: 81,093 MIXED
 
-# Filter SNP File
+# Filter SNP File using GATK statistics
+   # Genotype quality < 13
+   # coverage > 933X across all SNPs
+   # Quality x depth score < 2
+   # Fisher strand bias test > 60
+   # Mapping quality < 40
+   # Inbreeding coefficient < -0.8 (excess heterozygosity)
+   # Mapping quality rank sum test < -12.5
+   # Read position rank sum test < -8.0
+   # 3 or more SNPs in any 20 bp window
+
 # SNP Cluster: if three SNPs are in a 20 bp window.
 java -Xmx20g -jar GenomeAnalysisTK.jar \
 	-T VariantFiltration \
@@ -480,14 +490,13 @@ java -Xmx20g -jar GenomeAnalysisTK.jar \
 	--genotypeFilterName "GQ13" \
 	--clusterSize 3 \
 	--clusterWindowSize 20
-#_________________________________________________________________________________________________________
 
 # Filter Indels
-java -Xmx20g -jar /wrk/rfitak/SOFTWARE/EXECUTABLES/GenomeAnalysisTK.jar \
+java -Xmx20g -jar GenomeAnalysisTK.jar \
 	-T VariantFiltration \
-	-R /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta \
+	-R CB1.fasta \
 	-o All.filtered.INDELs.vcf \
-	--variant /wrk/rfitak/SNP-ANALYSIS/All.raw.INDELs.vcf \
+	--variant All.raw.INDELs.vcf \
 	--filterExpression "DP > 933 || DP < 5" \
 	--filterName "DP" \
 	--filterExpression "vc.hasAttribute('QD') && QD < 2.0" \
@@ -496,14 +505,13 @@ java -Xmx20g -jar /wrk/rfitak/SOFTWARE/EXECUTABLES/GenomeAnalysisTK.jar \
 	--filterName "FS" \
 	--filterExpression "vc.hasAttribute('ReadPosRankSum') && ReadPosRankSum < -20.0" \
 	--filterName "RPRS"
-#_________________________________________________________________________________________________________
 
-# Filter MIXED variants????
-java -Xmx20g -jar /wrk/rfitak/SOFTWARE/EXECUTABLES/GenomeAnalysisTK.jar \
+# Filter MIXED variants
+java -Xmx20g -jar GenomeAnalysisTK.jar \
 	-T VariantFiltration \
-	-R /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta \
+	-R CB1.fasta \
 	-o All.filtered.MIXED.vcf \
-	--variant /wrk/rfitak/SNP-ANALYSIS/All.raw.MIXED.vcf \
+	--variant All.raw.MIXED.vcf \
 	--filterExpression "DP > 933 || DP < 5" \
 	--filterName "DP" \
 	--filterExpression "vc.hasAttribute('QD') && QD < 2.0" \
