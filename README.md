@@ -30,7 +30,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 
 Sex Chromosome Identification (TBD)
 
-[SNP Calling- including base and variant quality score recalibrations](./SNP-calling.md)
+[SNP Calling - including base and variant quality score recalibrations](./SNP-calling.md)
 
 Admixture/PCA (TBD)
 
