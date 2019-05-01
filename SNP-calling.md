@@ -388,6 +388,9 @@ java -Xmx20g -jar GenomeAnalysisTK.jar \
 _Get the depth of coverage from the BAM files in order to use the coverage levels for filtering SNPs_
 
 ```bash
+# Make a list of the bam files
+ls *.sorted.rmdup.mq20.real.recal.bam > bamfiles.txt
+
 # Get coverage, analyze as a separate file using stats software (e.g., R)
 samtools \
    depth \
@@ -422,6 +425,94 @@ samtools \
 
 # mean of mean depths = 13.94X ; mean of SD = 16.17X
 # Set Max Depth to (mean+1SD) ~ 30X per individual
+```
+
+_Filter the SNPs identified above using GATK v3.1-1_
+```bash
+# First separate SNPs, INDELS/MIXED for separate processing (MIXED= combination of SNP and INDEL at same site)
+java -Xmx20g -jar GenomeAnalysisTK.jar \
+	-T SelectVariants \
+	-R CB1.fasta \
+	--variant All-GATKHC-2.vcf \
+	-selectType SNP \
+	-o All.raw.SNPs.vcf
+	# Results:  16,557,930 SNPs
+
+java -Xmx20g -jar GenomeAnalysisTK.jar \
+	-T SelectVariants \
+	-R CB1.fasta \
+	--variant All-GATKHC-2.vcf \
+	-selectType INDEL \
+	-o All.raw.INDELs.vcf
+	# Results: 2,721,748 INDELs
+
+java -Xmx20g -jar GenomeAnalysisTK.jar \
+	-T SelectVariants \
+	-R CB1.fasta \
+	--variant All-GATKHC-2.vcf \
+	-selectType MIXED \
+	-selectType MNP \
+	-o All.raw.MIXED.vcf
+	# Results: 81,093 MIXED
+
+# Filter SNP File
+# SNP Cluster: if three SNPs are in a 20 bp window.
+java -Xmx20g -jar GenomeAnalysisTK.jar \
+	-T VariantFiltration \
+	-R CB1.fasta \
+	-o All.filtered.SNPs.vcf \
+	--variant All.raw.SNPs.vcf \
+	--filterExpression "DP > 933 || DP < 5" \
+	--filterName "DP" \
+	--filterExpression "FS > 60.0" \
+	--filterName "FS" \
+	--filterExpression "MQ < 40.0" \
+	--filterName "MQ" \
+	--filterExpression "vc.hasAttribute('QD') && QD < 2.0" \
+	--filterName "QD" \
+	--filterExpression "vc.hasAttribute('InbreedingCoeff') && InbreedingCoeff < -0.8" \
+	--filterName "F" \
+	--filterExpression "vc.hasAttribute('MQRankSum') && MQRankSum < -12.5" \
+	--filterName "MQRS" \
+	--filterExpression "vc.hasAttribute('ReadPosRankSum') && ReadPosRankSum < -8.0" \
+	--filterName "RPRS" \
+	--genotypeFilterExpression "GQ < 13.0" \
+	--genotypeFilterName "GQ13" \
+	--clusterSize 3 \
+	--clusterWindowSize 20
+#_________________________________________________________________________________________________________
+
+# Filter Indels
+java -Xmx20g -jar /wrk/rfitak/SOFTWARE/EXECUTABLES/GenomeAnalysisTK.jar \
+	-T VariantFiltration \
+	-R /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta \
+	-o All.filtered.INDELs.vcf \
+	--variant /wrk/rfitak/SNP-ANALYSIS/All.raw.INDELs.vcf \
+	--filterExpression "DP > 933 || DP < 5" \
+	--filterName "DP" \
+	--filterExpression "vc.hasAttribute('QD') && QD < 2.0" \
+	--filterName "QD" \
+	--filterExpression "FS > 200.0" \
+	--filterName "FS" \
+	--filterExpression "vc.hasAttribute('ReadPosRankSum') && ReadPosRankSum < -20.0" \
+	--filterName "RPRS"
+#_________________________________________________________________________________________________________
+
+# Filter MIXED variants????
+java -Xmx20g -jar /wrk/rfitak/SOFTWARE/EXECUTABLES/GenomeAnalysisTK.jar \
+	-T VariantFiltration \
+	-R /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta \
+	-o All.filtered.MIXED.vcf \
+	--variant /wrk/rfitak/SNP-ANALYSIS/All.raw.MIXED.vcf \
+	--filterExpression "DP > 933 || DP < 5" \
+	--filterName "DP" \
+	--filterExpression "vc.hasAttribute('QD') && QD < 2.0" \
+	--filterName "QD" \
+	--filterExpression "FS > 200.0" \
+	--filterName "FS" \
+	--filterExpression "vc.hasAttribute('ReadPosRankSum') && ReadPosRankSum < -20.0" \
+	--filterName "RPRS"
+
 ```
 
 # To be completed...
