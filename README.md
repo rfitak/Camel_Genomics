@@ -44,7 +44,7 @@ Blast2GO Annotation (TBD)
 
 [GO Term Enrichment](./GO_enrichment.md)
 
-[Recreating demographic history using G-PHOCS](./g-phocs.md) \(Currently not used\)
+[Recreating demographic history using G-PHOCS](./g-phocs.md) \(___Incomplete and not used in the study___\)
 
 </div>
 
