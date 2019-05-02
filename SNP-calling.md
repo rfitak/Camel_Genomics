@@ -540,4 +540,28 @@ java -Xmx20g -jar GenomeAnalysisTK.jar \
 
 ```
 
-# To be completed...
+# Variant Quality Score Recalibration (VQSR) using GATK
+
+_Make a bed file of the XY scaffolds to exclude and the masking coordinates (repetitive elements)
+```bash
+# The file "masking_coordinates" was downloaded earlier from the CB1 reference genome (see code above)
+cat \
+	<(echo "# BED header") \
+	<(cat masking_coordinates | cut -f1-3) > exclude.bed.tmp
+
+# Make all genomic windows based on the reference genome index (.fai) created earlier using Samtools
+bedtools makewindows \
+   -n 1 \
+   -g CB1.fasta.fai > genome.bed
+
+# Find matching XY scaffolds from the genome.bed file and add to the list of excluded regions
+grep -F XY.exclude genome.bed >> exclude.bed.tmp
+while read line
+do
+grep "$line" genome.bed >> exclude.bed.tmp
+done < XY.exclude
+cat \
+	<(echo "# BED header") \
+	<(bedtools sort -header -i exclude.bed.tmp | bedtools merge -i /dev/stdin) > exclude.bed
+rm -rf genome.bed exclude.bed.tmp
+```
