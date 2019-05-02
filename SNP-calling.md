@@ -555,13 +555,10 @@ bedtools makewindows \
    -g CB1.fasta.fai > genome.bed
 
 # Find matching XY scaffolds from the genome.bed file and add to the list of excluded regions
-grep -F XY.exclude genome.bed >> exclude.bed.tmp
-while read line
-do
-grep "$line" genome.bed >> exclude.bed.tmp
-done < XY.exclude
+grep -f XY.exclude genome.bed >> exclude.bed.tmp
+
+# Clean up bed file (sort and merge regions
 cat \
 	<(echo "# BED header") \
 	<(bedtools sort -header -i exclude.bed.tmp | bedtools merge -i /dev/stdin) > exclude.bed
-rm -rf genome.bed exclude.bed.tmp
 ```
