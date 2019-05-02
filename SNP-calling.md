@@ -343,6 +343,7 @@ while read i
       -o ${i}.sorted.rmdup.mq20.real.recal.bam
    done < IDs.txt
 ```
+__The results of the BQSR can be viewed [Here](./plots/BQSR.pdf).__  
 
 _Perform SNP calling using GATK's HaplotypeCaller on the recalibrated BAM files from above_
 
