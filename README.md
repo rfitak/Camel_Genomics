@@ -63,6 +63,7 @@ Blast2GO Annotation (TBD)
 | SAMTOOLS | 0.1.19 | Li, H. et al. The Sequence Alignment/Map format and SAMtools. Bioinformatics 25, 2078-2079 (2009). |
 | GATK | 3.1-1 | Van der Auwera, G. A. et al. From FastQ data to high-confidence variant calls: the Genome Analysis Toolkit best practices pipeline. Curr. Protoc. Bioinformatics 43, 11.10.11-33 (2013). |
 | ANGSD | 0.563 | Korneliussen, T. S., Albrechtsen, A. & Nielsen, R. ANGSD: analysis of next generation sequencing data. BMC Bioinformatics 15, 356 (2014). |
+| QUALIMAP | 2.0.1 | Okonechnikov K., Conesa A., García-Alcalde F. Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data. Bioinformatics 32(2):292-4 (2015). |
 | BEDTOOLS | <ul><li>2.17.0</li><li>2.26.0</li></ul> | Quinlan, A. R. & Hall, I. M. BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics 26, 841-842 (2010). |
 | VCFTOOLS | 0.1.12b | Danecek P, Auton A, Abecasis G, Albers CA, Banks E, DePristo MA, et al. 2011. The variant call format and VCFtools. Bioinformatics. 27:2156–8. |
 | BEDOPS | n/a | Neph, S. et al. BEDOPS: high-performance genomic feature operations. Bioinformatics 28, 1919-1920 (2012). |
