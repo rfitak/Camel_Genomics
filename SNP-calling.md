@@ -655,6 +655,19 @@ vcftools --vcf All.SNPs.VQSR.vcf \
 	# Results: After filtering, kept 10819573 out of a possible 16557930 Sites
 ```
 
+_Assess overall variant set quality using the Ti/Tv ratio_
+```bash
+# Get TsTv stats from the raw SNP data
+vcftools --vcf All.raw.SNPs.vcf \
+	--TsTv-summary \
+	# Results: Ts/Tv ratio: 2.275
+	# After filtering, kept 16557930 out of a possible 16557930 Sites
 
+# Get TsTv stats from the filtered SNP data
+vcftools --vcf All.SNPs.filtered.vcf \
+	--TsTv-summary \
+	# Results: Ts/Tv ratio: 2.541
+	# After filtering, kept 10819573 out of a possible 10819573 Sites
+```
 
 
