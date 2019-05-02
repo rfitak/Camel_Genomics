@@ -588,3 +588,73 @@ vcftools --vcf All.filtered.SNPs.vcf \
 	# 	Read 2750974 BED file entries.
 	# After filtering, kept 4869698 out of a possible 16557930 Sites
 ```
+
+_Perform and apply VQSR: do not ignore 'DP' filter, since this minimizes repetitive regions_
+```bash
+java -Xmx20g -jar GenomeAnalysisTK.jar \
+	-T VariantRecalibrator \
+	-R CB1.fasta \
+	-input All.raw.SNPs.vcf \
+	-resource:highly-filtered,known=false,training=true,truth=true,prior=10.0 VQSR.training.vcf \
+	-an QD -an MQRankSum -an ReadPosRankSum -an FS -an MQ -an InbreedingCoeff \
+	-mode SNP \
+	--ignore_filter MQ \
+	--ignore_filter F \
+	--ignore_filter QD \
+	--ignore_filter FS \
+	--ignore_filter MQRS \
+	--ignore_filter SnpCluster \
+	--ignore_filter RPRS \
+	-recalFile VQSR.recal \
+	-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 97.5 -tranche 95.0 -tranche 90.0 \
+	-tranchesFile VQSR.tranches \
+	-nt 16 \
+	-rscriptFile VQSR.plots.R
+	# Results:
+	# QD: 	 mean = 16.87	 standard deviation = 6.39
+	# MQRankSum: 	 mean = 0.04	 standard deviation = 1.14
+	# ReadPosRankSum: 	 mean = 0.68	 standard deviation = 1.35
+	# FS: 	 mean = 3.57	 standard deviation = 4.28
+	# MQ: 	 mean = 59.56	 standard deviation = 1.29
+	# InbreedingCoeff: 	 mean = 0.29	 standard deviation = 0.31
+	# Training with 4860139 variants after standard deviation thresholding.
+	# WARNING: Very large training set detected. Downsampling to 2500000 training variants.
+	# Convergence after 88 iterations!
+	# Training with worst 1862944 scoring variants --> variants with LOD <= -5.0000.
+	# Evaluating full set of 16557930 variants...
+
+# Repeat using a different sensitivity level
+java -Xmx20g -jar GenomeAnalysisTK.jar \
+	-T ApplyRecalibration \
+	-R CB1.fasta \
+	-input All.raw.SNPs.vcf \
+	--ts_filter_level 95.0 \
+	-mode SNP \
+	-recalFile VQSR.recal \
+	-tranchesFile VQSR.tranches \
+	--ignore_filter MQ \
+	--ignore_filter F \
+	--ignore_filter QD \
+	--ignore_filter FS \
+	--ignore_filter MQRS \
+	--ignore_filter SnpCluster \
+	--ignore_filter RPRS \
+	-o All.SNPs.VQSR.vcf
+	# Results: After filtering, kept 12668925 out of a possible 16557930 Sites
+
+# Check results in VCFTOOLS with MAC and DP filters
+vcftools --vcf All.SNPs.VQSR.vcf \
+	--remove-filtered-geno-all \
+	--remove-filtered-all \
+	--mac 2 \
+	--max-missing-count 5 \
+	--minDP 5 \
+	--maxDP 30 \
+	--recode \
+	--out All.SNPs.filtered.vcf
+	# Results: After filtering, kept 10819573 out of a possible 16557930 Sites
+```
+
+
+
+
