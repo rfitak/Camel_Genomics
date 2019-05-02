@@ -398,7 +398,7 @@ samtools \
    depth \
    -f bamfiles.txt > coverage.txt
 
-# Qualimap
+# Qualimap v2.0.1
 while read bam
 do
 qualimap bamqc \
@@ -406,9 +406,9 @@ qualimap bamqc \
 	-nr 2000 \
 	-nt 16 \
 	-nw 400 \
-	-oc $name.coverage \
-	-outdir QUALIMAP/$name \
-	-outfile $name.pdf \
+	-oc $bam.coverage \
+	-outdir QUALIMAP/$bam \
+	-outfile $bam.pdf \
 	-outformat pdf \
 	--java-mem-size=3500M
 done < bamfiles.txt
