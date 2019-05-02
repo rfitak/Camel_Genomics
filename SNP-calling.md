@@ -562,3 +562,29 @@ cat \
 	<(echo "# BED header") \
 	<(bedtools sort -header -i exclude.bed.tmp | bedtools merge -i /dev/stdin) > exclude.bed
 ```
+
+_Additional filtering of variants usinf VCFTOOLS_
+```bash
+# Finish cleaning of SNPs using VCFTOOLS v0.1.12b
+   # Remove all filtered variants and genotypes from GATK
+   # minimum allele count must be ≥2
+   # Remove variants from regions in bed file
+   # Remove variants with a HWE p-value < 0.001 (not in HWE)
+   # Genotype depth (individual) must be ≥5 and ≤30
+vcftools --vcf All.filtered.SNPs.vcf \
+	--remove-filtered-all \
+	--remove-filtered-geno-all \
+	--exclude-bed exclude.bed \
+	--mac 2 \
+	--max-missing-count 5 \
+	--hwe 0.0001 \
+	--minDP 5 \
+	--maxDP 30 \
+	--recode \
+	--recode-INFO-all \
+	--out VQSR.training.vcf
+	# Results:
+	# Outputting VCF file...
+	# 	Read 2750974 BED file entries.
+	# After filtering, kept 4869698 out of a possible 16557930 Sites
+```
