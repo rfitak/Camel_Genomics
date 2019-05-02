@@ -392,10 +392,26 @@ _Get the depth of coverage from the BAM files in order to use the coverage level
 # Make a list of the bam files
 ls *.sorted.rmdup.mq20.real.recal.bam > bamfiles.txt
 
-# Get coverage, analyze as a separate file using stats software (e.g., R)
+# Get coverage using either Samtools or Qualimap
+# Then analyze as a separate file using stats software (e.g., R)
 samtools \
    depth \
    -f bamfiles.txt > coverage.txt
+
+# Qualimap
+while read bam
+do
+qualimap bamqc \
+	-bam $bam \
+	-nr 2000 \
+	-nt 16 \
+	-nw 400 \
+	-oc $name.coverage \
+	-outdir QUALIMAP/$name \
+	-outfile $name.pdf \
+	-outformat pdf \
+	--java-mem-size=3500M
+done < bamfiles.txt
    
 	# Results:
 	# Drom439 = 14.68X +- 16.55X
