@@ -14,31 +14,8 @@ gunzip -c bt_alt_Btau_4.6.1_chrY.fa.gz > Y.fasta
 
 ```bash
 # Align using LASTZ v1.02.00
-
-# Run following SHELL script to perform alignments
-
-#!/bin/bash -l
-# author: rfitak
-#SBATCH -J lastz.Liu
-#SBATCH -o lastz.Liu.out
-#SBATCH -e lastz.Liu.err
-#SBATCH -p hugemem
-#SBATCH -n 1
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
-#SBATCH -t 72:00:00
-#SBATCH --mem-per-cpu=48000
-#SBATCH --mail-type=END
-#SBATCH --mail-user=rfitak9@gmail.com
-
-# This code will run lastz to align camel contigs to cow sex chromosomes
-# Cow X are in X.fasta
-
-# change to working directory
-cd /wrk/rfitak/SEX_SCAFFOLDS
-
-
-/wrk/rfitak/SOFTWARE/EXECUTABLES/lastz \
+   # This required a cluster with at least 48GB per CPU
+lastz \
 	X.fasta \
 	/wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta \
 	--step=1 \
