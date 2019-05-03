@@ -59,6 +59,7 @@ Blast2GO Annotation (TBD)
 | --- | --- | --- |
 | POPOOLATION | 1.2.2 | Kofler, R. et al. PoPoolation: a toolbox for population genetic analysis of next generation sequencing data from pooled individuals. PLoS One 6, e15925 (2011). |
 | BWA | 0.6.2 | Li, H. & Durbin, R. Fast and accurate short read alignment with Burrows-Wheeler transform. Bioinformatics 25, 1754-1760 (2009). |
+| LASTZ | v1.02.00 | Harris, R.S. (2007) Improved pairwise alignment of genomic DNA. Ph.D. Thesis, The Pennsylvania State University. |
 | PICARD | 1.89 | Picard Toolkit. Broad Institute, GitHub Repository. http://broadinstitute.github.io/picard/ (2018) |
 | SAMTOOLS | 0.1.19 | Li, H. et al. The Sequence Alignment/Map format and SAMtools. Bioinformatics 25, 2078-2079 (2009). |
 | GATK | 3.1-1 | Van der Auwera, G. A. et al. From FastQ data to high-confidence variant calls: the Genome Analysis Toolkit best practices pipeline. Curr. Protoc. Bioinformatics 43, 11.10.11-33 (2013). |
