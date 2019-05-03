@@ -102,16 +102,19 @@ while read line
    c=$(( $c + 1))
 done < X.scaffolds.list
 
+# Merge the alignments summary with coverage per individual file
 paste X.aln.scaffolds tmp.txt > X.scaffolds.aln.cov
-sed -i 's/ /       /g' X.scaffolds.aln.cov
+sed -i 's/ /	/g' X.scaffolds.aln.cov
 rm -rf tmp.txt
 
 # Remove scaffolds that had no depth information
 cp X.scaffolds.aln.cov X.cov
-cat X.cov | perl -ne '$a = () = $_ =~ /\t/g; if ($a < 5){print}' | cut -f1 > X.remove.list
+cat X.cov | \
+   perl -ne '$a = () = $_ =~ /\t/g; if ($a < 5){print}' | \
+   cut -f1 > X.remove.list
 while read line
-do
-sed -i "/$line/d" X.cov
+   do
+   sed -i "/$line/d" X.cov
 done < X.remove.list
 ```
 
