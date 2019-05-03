@@ -11,7 +11,7 @@ gunzip -c Bos_taurus.UMD3.1.dna_sm.chromosome.X.fa.gz > X.fasta
 gunzip -c bt_alt_Btau_4.6.1_chrY.fa.gz > Y.fasta
 ```
 
-_Get the length of the X and Y, both with and without masking of repetitive elements
+_Get the length of the X and Y, both with and without masking of repetitive elements_
 ```bash
 # Get non-masked length of cow X
 seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[ATGCN]" | wc -l
