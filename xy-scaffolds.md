@@ -423,6 +423,8 @@ write.table(names(d[,1]), file = "Y.exclude", quote = F, row.names = F, col.name
 cat X.exclude Y.exclude > XY.exclude
    # Results:  1,381 scaffolds
 ```
+Link to the file [XY.exclude](./Data/XY.exclude)
+
 ---
 
 ### _Some extra code for making the supplmentary plots of coverage_
