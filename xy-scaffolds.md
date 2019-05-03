@@ -11,13 +11,13 @@ gunzip -c Bos_taurus.UMD3.1.dna_sm.chromosome.X.fa.gz > X.fasta
 gunzip -c bt_alt_Btau_4.6.1_chrY.fa.gz > Y.fasta
 ```
 ## X Chromosome
-
+_Align all camel scaffolds to the cow X using LASTZ v1.02.00_
 ```bash
-# Align using LASTZ v1.02.00
+# Align using LASTZ
    # This required a cluster with at least 48GB per CPU
 lastz \
 	X.fasta \
-	/wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta \
+	CB1.fasta \
 	--step=1 \
 	--gapped \
 	--chain \
@@ -31,47 +31,62 @@ lastz \
 	--seed=12of19 \
 	--notransition \
 	--progress=10 > X.Liu.aln.tab
-
-### END OF SHELL SCRIPT
 ```
 
+_Count number of bases in aligned scaffolds at different % coverage cutoffs_
 ```bash
-#_________________________________________________________________________________________________________
-
-# Count number of bases in aligned scaffolds at different coverage cutoffs
+# Loop for different cutoffs (e.g., 5 = 5% of scaffold aligned to X chromosome)
 for i in 1 2 5 10 20 30 40 50 60 70 80 90
-do
-head -1 X.Liu.aln.tab >> X.aln.$i.tab
-sed '1d' X.Liu.aln.tab | \
+   do
+   head -1 X.Liu.aln.tab >> X.aln.$i.tab
+   sed '1d' X.Liu.aln.tab | \
 	perl -ne 'chomp; $i='$i';@a=split(/\t/,$_); $b=$a[14]; $b=~s/%//; if ($b >= $i){print "$_\n";}' >> X.aln.$i.tab
-echo -n "Cutoff ${i}%:" >> X.cutoffs.out
-cut -f 7,9 X.aln.$i.tab | sed '1d' | sort | uniq | cut -f2 | awk '{ sum+=$1} END {print sum "\t" NR}' >> X.cutoffs.out
+   echo -n "Cutoff ${i}%:" >> X.cutoffs.out
+   cut -f 7,9 X.aln.$i.tab | \
+      sed '1d' | \
+      sort | \
+      uniq | \
+      cut -f2 | \
+      awk '{ sum+=$1} END {print sum "\t" NR}' >> X.cutoffs.out
 echo "Completed $i"
 done
+```
 
-#_________________________________________________________________________________________________________
-
-# Convert Liu LASTZ output to bed format and merge them together
+_Convert all the local alignments to BED format and merge them together_
+```bash
+# Convert Liu LASTZ output to bed format and merge
 sed '1d' X.Liu.aln.tab | \
 	cut -f 7,10,11 | \
 	sort -k1,1 -k2,2n | \
 	bedtools merge -i - > X.Liu.merged.bed
+```
 
-# Get the number of hits, total length, and % length for each scaffold
+_Get the number of hits, total length, and aligned length for each camel scaffold_
+```bash
+# Count the number of scaffolds with alignments to the X
 cut -f1 X.Liu.merged.bed | uniq > scaffolds.list
 	# Results: 5158 unique scaffolds
+
+# Build 4 column table
+   # Col1 = scaffold; Col2 = total length, Col3 = # local alignments per scaffold, Col4 = aligned length
 i=1
 while read line
-do
-echo "Analyzing scaffold $i"
-b=$(grep "$line" /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta.fai | cut -f2)
-c=$(grep -c "$line" /wrk/rfitak/SEX_SCAFFOLDS/X.Liu.aln.tab)
-d=$(grep "$line" X.Liu.merged.bed | perl -ne 'chomp;@a=split(/\t/,$_);$b=$a[2] - $a[1];print "$b\n"' | awk '{ sum+=$1} END {print sum}')
-echo "$line $b $c $d" >> X.aln.scaffolds
-i=$(( $i +1 ))
+   do
+   echo "Analyzing scaffold $i"
+   b=$(grep "$line" CB1.fasta.fai | cut -f2)
+   c=$(grep -c "$line" X.Liu.aln.tab)
+   d=$(grep "$line" X.Liu.merged.bed | \
+      perl -ne 'chomp;@a=split(/\t/,$_);$b=$a[2] - $a[1];print "$b\n"' | \
+      awk '{ sum+=$1} END {print sum}')
+   echo "$line $b $c $d" >> X.aln.scaffolds
+   i=$(( $i +1 ))
 done < scaffolds.list
+```
 
-# Get the mean and standard deviation of coverage in each individual
+_Get the genome wide mean and standard deviation of coverage per individual_
+```bash
+# Make a list of bam files
+
 # This will append columns of the mean coverage for each individual bam file in the same order
 # as given in the bamfiles.txt file.  Then, the standard deviation is printed in the remaining columns.
 
@@ -165,7 +180,10 @@ seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[ATGCN]" | wc -l
 	# Result: 61989626
 seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[atgcn]" | wc -l
 	# Result: 86834273
+```
 
+## Y Chromosome
+```bash
 ##############################################################################################################################
 	### Identifying Y linked scaffolds ###
 ##############################################################################################################################
