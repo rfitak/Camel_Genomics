@@ -418,6 +418,11 @@ bases = sum(d[,1])
 write.table(names(d[,1]), file = "Y.exclude", quote = F, row.names = F, col.names = F)
 ```
 
+### _Make final set of X and Y scaffolds to exclude downstream when necessary_
+```bash
+cat X.exclude Y.exclude > XY.exclude
+   # Results:  1,381 scaffolds
+```
 
 
 
