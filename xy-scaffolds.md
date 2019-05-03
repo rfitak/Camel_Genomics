@@ -1,40 +1,19 @@
 # Identifying putative X and Y (sex chromosome) scaffolds
-## Putative X scaffolds
 
+_Download Bos taurus X and Y chromosome sequences and blast camel scaffolds_
 ```bash
 # Download X/Y Cattle chromosomes
 wget ftp://ftp.ensembl.org/pub/release-78/fasta/bos_taurus/dna/Bos_taurus.UMD3.1.dna_sm.chromosome.X.fa.gz
 wget ftp://ftp.ncbi.nih.gov/genomes/Bos_taurus/CHR_Y/bt_alt_Btau_4.6.1_chrY.fa.gz
 
-# Make XY blast database
-makeblastdb -in XY.fasta -input_type fasta -dbtype nucl -title XY -out XY
-
-# Blast contigs
-pb blastn -query /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta -db XY -outfmt 6 -out XY.blast.out -evalue 0.001
-
-# Count unique scaffolds mapping to XY chromosomes
-cut -f1 XY.blast.out | uniq | wc -l
-	# Results: 5588 unique scaffolds
-
-# Get the length of these scaffolds combined:
-
-	# Results: echo "$c" : 1,991,069,707
-	# This is almost the entire genome, need a new method!
-	# Filtering was likely too loose.  
-
-#_________________________________________________________________________________________________________
-
-# Align using LASTZ v1.02.00
-wget http://www.bx.psu.edu/miller_lab/dist/lastz-1.02.00.tar.gz
-tar -zxvf lastz-1.02.00.tar.gz
-rm -rf lastz-1.02.00.tar.gz
-cd lastz-distrib-1.02.00/src
-LASTZ_INSTALL=/wrk/rfitak/SOFTWARE/EXECUTABLES
-make
-make install
-
-# Get fast file of Cattle X chromosome
+# Make into Fasta file
 gunzip -c Bos_taurus.UMD3.1.dna_sm.chromosome.X.fa.gz > X.fasta
+gunzip -c bt_alt_Btau_4.6.1_chrY.fa.gz > Y.fasta
+```
+## X Chromosome
+
+```bash
+# Align using LASTZ v1.02.00
 
 # Run following SHELL script to perform alignments
 
@@ -77,7 +56,9 @@ cd /wrk/rfitak/SEX_SCAFFOLDS
 	--progress=10 > X.Liu.aln.tab
 
 ### END OF SHELL SCRIPT
+```
 
+```bash
 #_________________________________________________________________________________________________________
 
 # Count number of bases in aligned scaffolds at different coverage cutoffs
