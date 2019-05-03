@@ -10,6 +10,32 @@ wget ftp://ftp.ncbi.nih.gov/genomes/Bos_taurus/CHR_Y/bt_alt_Btau_4.6.1_chrY.fa.g
 gunzip -c Bos_taurus.UMD3.1.dna_sm.chromosome.X.fa.gz > X.fasta
 gunzip -c bt_alt_Btau_4.6.1_chrY.fa.gz > Y.fasta
 ```
+
+_Get the length of the X and Y, both with and without masking of repetitive elements
+```bash
+# Get non-masked length of cow X
+seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[ATGCN]" | wc -l
+	# Result: 61989626
+# Get masked length of cow X
+seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[atgcn]" | wc -l
+	# Result: 86834273
+
+# The Y chromosome for cattle is in 12 scaffolds, concatenate them (put "N" string in between scaffolds)
+cat <(echo ">Y") \
+   <(seqtk seq -A -l 0 bt_alt_Btau_4.6.1_chrY.fa | \
+      grep -v "^>" | \
+      perl -ne 'chomp($_); print "$_"; print "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN"') \
+      > Y.fasta
+
+# Get non-masked length of cow Y
+seqtk seq -A -l 0 Y.fasta | grep -v "^>" | grep -o "[ATGCN]" | wc -l
+	# Result: 38850781
+# Get masked length of cow Y
+seqtk seq -A -l 0 Y.fasta | grep -v "^>" | grep -o "[atgcn]" | wc -l
+	# Result: 0
+	# Result: new Y is 38,850,781 bases long
+```
+
 ## X Chromosome
 _Align all camel scaffolds to the cow X using LASTZ v1.02.00_
 ```bash
@@ -128,74 +154,71 @@ write(as.vector(b), file = "", ncolumns = l[2], sep = "\t")
 write(as.vector(c), file = "", ncolumns = l[2], sep = "\t")
 ```
 
-```bash
-# Calculate Wilcoxon Rank Sum test for males vs females coverage ratio
+_Using R: Calculate Wilcoxon Rank Sum test for males vs females coverage ratio_
+```R
 # Output a list of p-values for each scaffold
-# Requires a table of 2 columns: col1=camel IDs col2=mean coverage
-options(scipen=999)
-a=read.table("X.cov", header=F, sep="\t", stringsAsFactors=FALSE, colClasses="character")
-m=read.table("mean.coverage", header=F, sep="\t")
-a=t(a)
-b=a[5:29,]
-b=apply(b,2,as.numeric)
-b=b/m$V2
+# Requires a table (file "mean.coverage") of 2 columns: col1=camel IDs col2=mean coverage
+options(scipen = 999)
+
+# Load files
+a = read.table("X.cov", header = F, sep = "\t", stringsAsFactors = FALSE, colClasses = "character")
+m = read.table("mean.coverage", header = F, sep = "\t")
+a = t(a)
+
+# Get subtable of scaffold coverage per individual (25 individuals)
+b = a[5:29,]
+b = apply(b,2,as.numeric)
+
+# Calculate the ratio of scaffold coverage to genome-wide mean coverage
+b = b/m$V2
 
 # Set rows of known males and females
-males=c(2,16,17,19,20,22,25)
-females=c(9,10,11,12,13,14,15,1,18,21,23,24)
+males = c(2,16,17,19,20,22,25)
+females = c(9,10,11,12,13,14,15,1,18,21,23,24)
 
 # Build my Wilcox function
 my.wilcox.test <- function(x){
-	test=wilcox.test(x[males],x[females], alternative="less")
-	p.val=test$p.value
+	test = wilcox.test(x[males], x[females], alternative = "less")
+	p.val = test$p.value
 	return(p.val)
 }
 
-# Apply function to each column (scaffold) 
-p.values=apply(b,2,my.wilcox.test)
-b=rbind(b, p.values)
-c=rbind(as.numeric(a[2,]),as.numeric(a[3,]),as.numeric(a[4,]),b)
-colnames(c)<-a[1,]
-c=rbind(c,c[3,]/c[1,])
-c=t(c)
+# Apply function to each scaffold 
+p.values = apply(b, 2, my.wilcox.test)
+b = rbind(b, p.values)
+c = rbind(as.numeric(a[2,]), as.numeric(a[3,]), as.numeric(a[4,]), b)
+colnames(c) <- a[1,]
+c = rbind(c, c[3,]/c[1,])
+c = t(c)
 
 # Select only scaffolds with p<0.05 & various % length cutoffs
-cutoff=c(0,0.01,0.02,0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)
-bases=vector()
+cutoff = c(0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+bases = vector()
 for (i in cutoff){
-	d=c[which(c[,29] < 0.05 & c[,30] >= i),]
-	bases=c(bases, sum(d[,1]))
+	d = c[which(c[,29] < 0.05 & c[,30] >= i),]
+	bases = c(bases, sum(d[,1]))
 }
 
 # Plot results
-pdf("X.aligned.pdf", width=7, height=5)
+pdf("X.aligned.pdf", width = 7, height = 5)
 plot.new()
-#plot.window(xlim=c(0,1),ylim=c(0,100000000))
-plot.window(xlim=c(0,1),ylim=c(100000,1000000000), log="y")
+plot.window(xlim = c(0, 1), ylim = c(100000, 1000000000), log = "y")
 box()
-axis(1,at=c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1))
-#axis(2, las=1, at=c(1000000,25000000,50000000,75000000,100000000), labels=c(1,25,50,75,100))
-axis(2, las=1, at=c(100000,1000000,10000000,100000000,1000000000), labels=c(0.1,1,10,100,1000))
-points(cutoff, bases, pch=19)
-points(cutoff, bases, type="l", lwd=1.5)
-abline(h=148823899, col="red", lty="dashed")
-#abline(h=61989626, col="red", lty="dashed") # non-repeat-masked portion
-title(ylab="Megabases", xlab="Proportion of scaffold aligned", cex.lab=1.4)
+axis(1, at = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
+axis(2, las = 1, at = c(100000, 1000000, 10000000, 100000000, 1000000000), labels = c(0.1, 1, 10, 100, 1000))
+points(cutoff, bases, pch = 19)
+points(cutoff, bases, type = "l", lwd = 1.5)
+abline(h = 148823899, col = "red", lty = "dashed")
+#abline(h = 61989626, col = "red", lty = "dashed") # non-repeat-masked portion
+title(ylab = "Megabases", xlab = "Proportion of scaffold aligned", cex.lab = 1.4)
 dev.off()
 
 # Extract list of scaffolds for X at cutoff >20%
-d=c[which(c[,29] < 0.05 & c[,30] >= 0.2),]
-bases=sum(d[,1])
+d = c[which(c[,29] < 0.05 & c[,30] >= 0.2),]
+bases = sum(d[,1])
 	# Results: Excluding 92,163,776 bases, 1,148 scaffolds
 # Write list of scaffolds to exclude
-write.table(names(d[,1]), file="X.exclude", quote=F, row.names=F, col.names=F)
-#_________________________________________________________________________________________________________
-
-# Get masked and non-masked length of cow X
-seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[ATGCN]" | wc -l
-	# Result: 61989626
-seqtk seq -A -l 0 X.fasta | grep -v "^>" | grep -o "[atgcn]" | wc -l
-	# Result: 86834273
+write.table(names(d[,1]), file = "X.exclude", quote = F, row.names = F, col.names = F)
 ```
 
 ## Y Chromosome
