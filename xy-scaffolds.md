@@ -431,7 +431,7 @@ cat X.exclude Y.exclude > XY.exclude
 # Get the mean depth across individuals (separate males, females, X)
 # Requires a list of bamfiles and their mean coverages, females first (n=12) and males second (n=7)
 # Make a new "genome" file for the X
-cp CB1.fasta.fai .
+cp /path/to/CB1.fasta.fai .
 c=1
 while read line
    do
