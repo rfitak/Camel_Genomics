@@ -1,6 +1,6 @@
 # Identifying putative X and Y (sex chromosome) scaffolds
 
-_Download Bos taurus X and Y chromosome sequences and blast camel scaffolds_
+_Download Bos taurus X and Y chromosome sequences_
 ```bash
 # Download X/Y Cattle chromosomes
 wget ftp://ftp.ensembl.org/pub/release-78/fasta/bos_taurus/dna/Bos_taurus.UMD3.1.dna_sm.chromosome.X.fa.gz
