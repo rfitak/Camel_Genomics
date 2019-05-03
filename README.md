@@ -31,7 +31,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
  
 [Read processing, trimming, and mapping](./read_processing.md)
 
-Sex Chromosome Identification (TBD)
+[Sex Chromosome Identification](./xy-scaffolds.md)
 
 [SNP Calling - including base and variant quality score recalibrations](./SNP-calling.md)
 
