@@ -113,7 +113,19 @@ while read line
 do
 sed -i "/$line/d" X.cov
 done < X.remove.list
+```
 
+_Here is the R script 'mean_sd.R'_
+```R
+a = read.table("stdin")
+b = colMeans(a)
+c = apply(a, 2, sd)
+l = dim(a)
+write(as.vector(b), file = "", ncolumns = l[2], sep = "\t")
+write(as.vector(c), file = "", ncolumns = l[2], sep = "\t")
+```
+
+```bash
 # Calculate Wilcoxon Rank Sum test for males vs females coverage ratio
 # Output a list of p-values for each scaffold
 # Requires a table of 2 columns: col1=camel IDs col2=mean coverage
