@@ -85,22 +85,23 @@ done < scaffolds.list
 
 _Get the genome wide mean and standard deviation of coverage per individual_
 ```bash
-# Make a list of bam files
+# Make a list of the bam files (realigned and recalibrated)
+ls *.sorted.rmdup.mq20.real.recal.bam > bamfiles.txt
 
-# This will append columns of the mean coverage for each individual bam file in the same order
+# This code will append columns of the mean coverage for each individual bam file in the same order
 # as given in the bamfiles.txt file.  Then, the standard deviation is printed in the remaining columns.
-
 c=1
 while read line
-do
-echo "Running scaffold $c"
-samtools depth -f bamfiles.txt -r $line | \
+   do
+   echo "Running scaffold $c"
+   samtools depth -f bamfiles.txt -r $line | \
 	cut -f3- | \
 	Rscript mean_sd.R - | \
 	tr "\n" "\t" | \
 	cat - <(echo "") >> tmp.txt
-c=$(( $c + 1))
+   c=$(( $c + 1))
 done < X.scaffolds.list
+
 paste X.aln.scaffolds tmp.txt > X.scaffolds.aln.cov
 sed -i 's/ /       /g' X.scaffolds.aln.cov
 rm -rf tmp.txt
