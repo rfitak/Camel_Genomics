@@ -423,42 +423,33 @@ write.table(names(d[,1]), file = "Y.exclude", quote = F, row.names = F, col.name
 cat X.exclude Y.exclude > XY.exclude
    # Results:  1,381 scaffolds
 ```
+---
 
-
-
-
-
-
-
-
-
+### _Some extra code for making the supplmentary plots of coverage_
+ _For the X_
 ```bash
-##############################################################################################################################
-	### Plot M vs F coverage for X/Y excluded contigs ###
-##############################################################################################################################
-
-# Get the mean depth across individuals (separate males, females, X, Y)
+# Get the mean depth across individuals (separate males, females, X)
 # Requires a list of bamfiles and their mean coverages, females first (n=12) and males second (n=7)
-# Make a new "genome" file for the X and Y
-cp /wrk/rfitak/NEW-MAPPING/REFERENCE/CB1.fasta.fai .
+# Make a new "genome" file for the X
+cp CB1.fasta.fai .
 c=1
 while read line
-do
-echo "Grabbing scaffold $c"
-grep "$line" CB1.fasta.fai >> X.fai
-c=$(( $c + 1))
+   do
+   echo "Grabbing scaffold $c"
+   grep "$line" CB1.fasta.fai >> X.fai
+   c=$(( $c + 1))
 done < X.exclude
 
 count=1
 while read line
-do
-bam=$(echo -e "$line" | cut -f1)
-cov=$(echo -e "$line" | cut -f2)
-bedtools makewindows -w 1000 -s 1000 -g X.fai | \
+   do
+   bam=$(echo -e "$line" | cut -f1)
+   cov=$(echo -e "$line" | cut -f2)
+   bedtools makewindows -w 1000 -s 1000 -g X.fai | \
 	samtools bedcov /dev/stdin $bam | \
 	perl -ne 'chomp; $c='$cov'; @a=split(/\t/,$_);$b=$a[3]/($a[2]-$a[1]);$d=$b/$c;print "$d\n"' \
 	> $count.total_coverage
-count=$(( $count + 1))
+   count=$(( $count + 1))
 done < bamfiles.sexes
 
 paste 1.total_coverage \
@@ -481,50 +472,57 @@ paste 1.total_coverage \
 	18.total_coverage \
 	19.total_coverage > X.total_coverage
 
-for i in {1..19}
-do
-rm -rf $i.total_coverage
-done
+rm -rf {1..19}.total_coverage
+```
 
-# Graph results in R
-X=read.table("X.total_coverage", sep="\t", header=F)
+_Graph results in R for X_
+```R
+# Load data
+X = read.table("X.total_coverage", sep = "\t", header = F)
 
-means.F=rowMeans(X[,1:12])
+# Get coverage ratio across windows
+means.F = rowMeans(X[,1:12])
 	# Results: mean ratio of scaffold coverage to genome coverage using 1000bp non-overlapping windows: 0.9831627 (SD 0.5290527)
-means.M=rowMeans(X[,13:19])
+means.M = rowMeans(X[,13:19])
 	# Results: mean ratio of scaffold coverage to genome coverage using 1000bp non-overlapping windows: 0.5708513 (SD 0.314587)
 
-pdf("X.cov.pdf",width=7, height=5)
+# Make plot
+pdf("X.cov.pdf",width = 7, height = 5)
 plot.new()
-plot.window(xlim=c(0,92753), ylim=c(0,2))
+plot.window(xlim = c(0, 92753), ylim = c(0, 2))
 box()
-axis(1, at=c(0,10000,20000,30000,40000,50000,60000,70000,80000,90000), labels=c(0,10,20,30,40,50,60,70,80,90))
-axis(2, las=1, at=c(0,0.5,1,1.5,2), labels=c(0,0.5,1,1.5,2))
-points(means.F, pch=1, cex=0.1, col=rgb(0,0,0,alpha=0.3))
-points(means.M, pch=1, cex=0.1, col=rgb(1,0,0,alpha=0.3))
-title(xlab="Megabases", ylab="Coverage Ratio")
+axis(1, at = c(0, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000), labels = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90))
+axis(2, las = 1, at = c(0, 0.5, 1, 1.5, 2), labels = c(0, 0.5, 1, 1.5, 2))
+points(means.F, pch = 1, cex = 0.1, col = rgb(0, 0, 0, alpha = 0.3))
+points(means.M, pch = 1, cex = 0.1, col = rgb(1, 0, 0, alpha = 0.3))
+title(xlab = "Megabases", ylab = "Coverage Ratio")
 dev.off()
+```
 
-# Repeat for the Y
+_Repeat for the Y_
+```bash
+# Get the mean depth across individuals (separate males, females, Y)
+# Requires a list of bamfiles and their mean coverages, females first (n=12) and males second (n=7)
+# Make a new "genome" file for the Y
 c=1
 while read line
-do
-echo "Grabbing scaffold $c"
-grep "$line" CB1.fasta.fai >> Y.fai
-c=$(( $c + 1))
+   do
+   echo "Grabbing scaffold $c"
+   grep "$line" CB1.fasta.fai >> Y.fai
+   c=$(( $c + 1))
 done < Y.exclude
 
 count=1
 while read line
 do
-bam=$(echo -e "$line" | cut -f1)
-cov=$(echo -e "$line" | cut -f2)
-bedtools makewindows -w 1000 -s 1000 -g Y.fai | \
+   bam=$(echo -e "$line" | cut -f1)
+   cov=$(echo -e "$line" | cut -f2)
+   bedtools makewindows -w 1000 -s 1000 -g Y.fai | \
 	samtools bedcov /dev/stdin $bam | \
 	perl -ne 'chomp; $c='$cov'; @a=split(/\t/,$_);$b=$a[3]/($a[2]-$a[1]);$d=$b/$c;print "$d\n"' \
 	> $count.total_coverage
-echo "Finished $count"
-count=$(( $count + 1))
+   echo "Finished $count"
+   count=$(( $count + 1))
 done < bamfiles.sexes
 
 paste 1.total_coverage \
@@ -546,27 +544,30 @@ paste 1.total_coverage \
 	17.total_coverage \
 	18.total_coverage \
 	19.total_coverage > Y.total_coverage
-for i in {1..19}
-do
-rm -rf $i.total_coverage
-done
+	
+rm -rf {1..19}.total_coverage
+```
 
-# Graph results in R
-Y=read.table("Y.total_coverage", sep="\t", header=F)
+_Graph results in R for Y_
+```R
+# Load data
+Y = read.table("Y.total_coverage", sep = "\t", header = F)
 
-means.F=rowMeans(Y[,1:12])
+# Get coverage ratio across windows
+means.F = rowMeans(Y[,1:12])
 	# Results: mean ratio of scaffold coverage to genome coverage using 1000bp non-overlapping windows: 0.04680019 (SD 0.0908989)
-means.M=rowMeans(Y[,13:19])
+means.M = rowMeans(Y[,13:19])
 	# Results: mean ratio of scaffold coverage to genome coverage using 1000bp non-overlapping windows: 0.4799076 (SD 0.247982)
 
-pdf("Y.cov.pdf",width=7, height=5)
+# Make plot
+pdf("Y.cov.pdf",width = 7, height = 5)
 plot.new()
-plot.window(xlim=c(0,1618), ylim=c(0,2))
+plot.window(xlim = c(0, 1618), ylim = c(0, 2))
 box()
-axis(1, at=c(0,250,500,750,1000,1250,1500), labels=c(0,0.25,0.5,0.75,1.0,1.25,1.5))
-axis(2, las=1, at=c(0,0.5,1,1.5,2), labels=c(0,0.5,1,1.5,2))
-points(means.F, pch=1, cex=0.25, col=rgb(0,0,0,alpha=0.5))
-points(means.M, pch=1, cex=0.25, col=rgb(1,0,0,alpha=0.5))
-title(xlab="Megabases", ylab="Coverage Ratio")
+axis(1, at = c(0, 250, 500, 750, 1000, 1250, 1500), labels = c(0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5))
+axis(2, las = 1, at = c(0, 0.5, 1, 1.5, 2), labels = c(0, 0.5, 1, 1.5, 2))
+points(means.F, pch = 1, cex = 0.25, col = rgb(0, 0, 0, alpha = 0.5))
+points(means.M, pch = 1, cex = 0.25, col = rgb(1, 0, 0, alpha = 0.5))
+title(xlab = "Megabases", ylab = "Coverage Ratio")
 dev.off()
 ```
