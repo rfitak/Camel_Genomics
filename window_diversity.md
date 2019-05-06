@@ -10,7 +10,7 @@ git clone https://github.com/simonhmartin/genomics_general.git
 
 Next, we need to prepare our VCF file of SNPs by compression and index it.  This should be done using the [Samtools](http://www.htslib.org) suite of tools.
 ```bash
-bgzip -c snps.vcf > snps.vcf.gz
+bgzip -c All.SNPs.filtered.vcf > snps.vcf.gz
 tabix -p vcf snps.vcf.gz
 ```
 
