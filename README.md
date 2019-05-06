@@ -37,7 +37,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 
 Admixture/PCA (TBD)
 
-PSMC (TBD)
+[PSMC Demographic Reconstructions](./psmc.md)
 
 Homogeneity/HKA Tests (TBD)
 
