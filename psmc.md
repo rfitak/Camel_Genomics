@@ -74,7 +74,7 @@ rm -rf $ID.plot.{1..100}.txt \
 mv $ID.plot.0.txt $ID.plot.txt
 ```
 
-PSMC plots of each individual (not displayed in the manuscript):
+PSMC plots of each individual (not displayed in the manuscript).  Red lines are the overall PSMC demographic reconstruction, the lighter, pink lines are the 100 bootstrap replicates:
 ![psmc](./plots/psmc.png)
   
 _Alternatively, build a plot in R (prettier than the standard PSMC plot)_
