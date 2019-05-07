@@ -74,6 +74,9 @@ rm -rf $ID.plot.{1..100}.txt \
 mv $ID.plot.0.txt $ID.plot.txt
 ```
 
+PSMC plots of each individual (not displayed in the manuscript):
+![psmc](./plots/psmc.png)
+  
 _Alternatively, build a plot in R (prettier than the standard PSMC plot)_
 ```R
 # Plot in R
