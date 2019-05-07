@@ -35,7 +35,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 
 [SNP Calling - including base and variant quality score recalibrations](./SNP-calling.md)
 
-Admixture/PCA (TBD)
+[Analysis of Genetic Structure (PCA & Admixture)](./admixture.md)
 
 [PSMC Demographic Reconstructions](./psmc.md)
 
