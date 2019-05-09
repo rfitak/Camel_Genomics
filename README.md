@@ -41,8 +41,6 @@ ___This GitHub repository contains a summary of the various code, software, and 
 
 Homogeneity/HKA Tests (TBD)
 
-Blast2GO Annotation (TBD)
-
 [Sliding window analysis of genetic diversity](./window_diversity.md)
 
 [GO Term Enrichment](./GO_enrichment.md)
