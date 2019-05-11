@@ -200,7 +200,7 @@ angsd \
    -baq 1 \
    -nThreads 16 \
    -ref CB1.fasta \
-   -sites ../Drom-WC.Fst.pos
+   -sites Drom-WC.Fst.pos
 
 # DC vs WC
 angsd \
