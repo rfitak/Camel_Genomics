@@ -561,3 +561,84 @@ do
    c=$(( $c + 1 ))
 done < transcripts.list
 ```
+
+_Finally, in R perform all tests and build a big table
+```R
+# Setup output table header
+names = c("Transcript", "A", "B", "C", "D", "Homo_P", "Homo_Q", "HKA_1_P", "HKA_1_Q", "HKA_2_P", "HKA_2_Q", "CA-DB_ratio")
+
+# Load data into R for DC vs WC
+a = read.table("DC-WC.tbl")
+
+# Get sums for HKA test
+A.hka = sum(a$V2)
+B.hka = sum(a$V3)
+C.hka = sum(a$V4)
+D.hka = sum(a$V5)
+
+# Check to see how many genes have at least 1 fixed difference
+# If no fixed differences, the test cannot be performed (divide by zero)
+a2 = a[which(a[,4] + a[,5] > 0),]
+   # Result:  only 90 of 17912 remain
+
+# Perform Fisher test for Homogeneity (2x2 table)
+a.homo = apply(a2, 1, fisher)
+
+# Convert P-value to Q score
+a.homoQ = -log10(a.homo)
+
+# Perform HKA test for Species 1 and Q transform
+a.hka = apply(a2, 1, HKA_AC)
+a.hkaQ = -log10(a.hka)
+
+# Perform HKA test for Species 2 and Q transform
+b.hka = apply(a2, 1, HKA_BD)
+b.hkaQ = -log10(b.hka)
+
+# Calculate the CA:DB ratio
+CADB.ratio = apply(a2, 1, ratio)
+
+# Combine all results into a large table
+a.out = cbind(a2, a.homo, a.homoQ, a.hka, a.hkaQ, b.hka, b.hkaQ, CADB.ratio)
+colnames(a.out) = names
+
+# Write table to output file
+write.table(a.out, file = "DC-WC.test.out", quote = F, sep = "\t", row.names = F)
+
+# Repeat for Drom vs WC
+# Load data into R for DROM vs WC
+a = read.table("Drom-WC.tbl")
+
+# Get sums for HKA test
+A.hka = sum(a$V2)
+B.hka = sum(a$V3)
+C.hka = sum(a$V4)
+D.hka = sum(a$V5)
+
+# Check to see how many genes have at least 1 fixed difference
+# If no fixed differences, the test cannot be performed (divide by zero)
+a2 = a[which(a[,4] + a[,5] > 0),]
+   # Result:  only 10297 of 17912 remain
+
+# Perform Fisher test for Homogeneity (2x2 table) and Q transform
+a.homo = apply(a2, 1, fisher)
+a.homoQ = -log10(a.homo)
+
+# Perform HKA test for Species 1 and Q transform
+a.hka = apply(a2, 1, HKA_AC)
+a.hkaQ = -log10(a.hka)
+
+# Perform HKA test for Species 2 and Q transform
+b.hka = apply(a2, 1, HKA_BD)
+b.hkaQ = -log10(b.hka)
+
+# Calculate the CA:DB ratio
+CADB.ratio = apply(a2, 1, ratio)
+
+# Combine all results into a large table
+a.out = cbind(a2, a.homo, a.homoQ, a.hka, a.hkaQ, b.hka, b.hkaQ, CADB.ratio)
+colnames(a.out) = names
+
+# Write table to output file
+write.table(a.out, file = "Drom-WC.test.out", quote = F, sep = "\t", row.names = F)
+```
