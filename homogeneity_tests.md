@@ -204,7 +204,7 @@ angsd \
 
 # DC vs WC
 angsd \
-   -out Vpacos.counts \
+   -out Vpacos.counts.DC-WC \
    -i Vpacos.merged.bam \
    -doCounts 1 \
    -dumpCounts 3 \
@@ -214,6 +214,170 @@ angsd \
    -sites DC-WC.Fst.pos
 ```
 
+_From the counts files, the following R code selects the ancestral allele_
+```R
+# DROM vs WC
+# Read in the ANGSD output files
+a = read.table(gzfile("Vpacos.counts.Drom-WC.pos.gz"), header = T)
+b = read.table(gzfile("Vpacos.counts.Drom-WC.counts.gz"), header = T)
+
+# Combine output into a matrix
+df = cbind(a, b)
+
+# Retain sites with a depth of at least 2
+df2 = subset(df, totDepth >= 2)
+   # Started with 3410975 positions
+      # 3332844 with at least 1x coverage
+      # 3301577 with >=2x coverage
+
+# Make a list of bases to count (no 'N')
+bases = c("A", "C", "G", "T")
+
+# For each SNP, select the base with the most counts
+# If there are ties, randomly select one of the tied bases
+Vpacos = vector()
+for (i in 1:nrow(df2)){
+   mx = which(df2[i, 4:7] == max(df2[i, 4:7]))
+   if (length(mx) == 1){
+      anc = mx
+   } else {
+      anc = sample(mx, 1)
+   }
+   Vpacos = c(Vpacos, bases[anc])
+   print(i)
+}
+
+# Append a column of the ancestral base selected
+df2 = cbind(df2, Vpacos)
+
+# Write the output to a new table
+write.table(df2, file = "Vpacos.Drom-WC.anc.tsv", sep = "\t", row.names = F, quote = F)
+
+# DC vs WC
+# Read in the ANGSD output files
+a = read.table(gzfile("Vpacos.counts.DC-WC.pos.gz"), header = T)
+b = read.table(gzfile("Vpacos.counts.DC-WC.counts.gz"), header = T)
+
+# Combine output into a matrix
+df = cbind(a, b)
+
+# Retain sites with a depth of at least 2
+df2 = subset(df, totDepth >= 2)
+   # Started with 18801 positions
+      # 18251 with at least 1x coverage
+      # 18001 with >=2x coverage
+
+# Make a list of bases to count (no 'N')
+bases = c("A", "C", "G", "T")
+
+# For each SNP, select the base with the most counts
+# If there are ties, randomly select one of the tied bases
+Vpacos = vector()
+for (i in 1:nrow(df2)){
+   mx = which(df2[i, 4:7] == max(df2[i, 4:7]))
+   if (length(mx) == 1){
+      anc = mx
+   } else {
+      anc = sample(mx, 1)
+   }
+   Vpacos = c(Vpacos, bases[anc])
+}
+
+# Append a column of the ancestral base selected
+df2 = cbind(df2, Vpacos)
+
+# Write the output to a new table
+write.table(df2, file = "Vpacos.DC-WC.anc.tsv", sep = "\t", row.names = F, quote = F)
+```
+
+_Get the alleles from WC and Drom to append to the table_
+see the [anc.pl](./Data/anc.pl) script.
+```bash
+# WC - append column to table titled "WC_Allele"
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep WC.txt \
+   --positions Vpacos.Drom-WC.anc.tsv \
+   --stdout \
+   --counts | \
+   sed '1d' | \
+   ./anc.pl | \
+   paste Vpacos.Drom-WC.anc.tsv <(cat <(echo "WC_Allele") -) > tmp
+mv tmp Vpacos-WC-Drom.pos
+
+# DROM - append column to table titled "DROM_Allele"
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep Drom.txt \
+   --positions Vpacos.Drom-WC.anc.tsv \
+   --stdout \
+   --counts | \
+   sed '1d' | \
+   ./anc.pl | \
+   paste Vpacos-WC-Drom.pos <(cat <(echo "DROM_Allele") -) > tmp
+mv tmp Vpacos-WC-Drom.pos
+```
+
+_Make a list of sites fixed between either DROM vs \[WC+alpaca\] or  WC vs \[DROM+alpaca\]_
+```bash
+# Sites DROM vs [WC+alpaca]
+sed '1d' Vpacos-WC-Drom.pos | \
+   perl -ne 'chomp; @a=split(/\t/,$_);if($a[9] ne $a[8] && $a[9] ne $a[7]){print "$_\n"}' | \
+   cut -f1,2 > Drom-WC-Vpacos.fixed.pos
+      # Results
+      # 1837134 SNPs to process
+      
+# Sites WC vs [DROM+alpaca]
+sed '1d' Vpacos-WC-Drom.pos | \
+   perl -ne 'chomp; @a=split(/\t/,$_);if($a[8] ne $a[7] && $a[8] ne $a[9]){print "$_\n"}' | \
+   cut -f1,2 > WC-Drom-Vpacos.fixed.pos
+      # Results
+      # 1523950 SNPs to process
+```
+
+_Get the alleles from WC and DC to append to the table_
+```bash
+# WC - append column to table titled "WC_Allele"
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep WC.txt \
+   --positions Vpacos.DC-WC.anc.tsv \
+   --stdout \
+   --counts | \
+   sed '1d' | \
+   ./anc.pl | \
+   paste Vpacos.DC-WC.anc.tsv <(cat <(echo "WC_Allele") -) > tmp
+mv tmp Vpacos-WC-DC.pos
+
+# DC - append column to table titled "DC_Allele"
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep DC.txt \
+   --positions Vpacos.DC-WC.anc.tsv \
+   --stdout \
+   --counts | \
+   sed '1d' | \
+   ./anc.pl | \
+   paste Vpacos-WC-DC.pos <(cat <(echo "DC_Allele") -) > tmp
+mv tmp Vpacos-WC-DC.pos
+```
+
+_Make a list of sites fixed between either DC vs \[WC+alpaca\] or  WC vs \[DC+alpaca\]_
+```bash
+# Sites DC vs [WC+alpaca]
+sed '1d' Vpacos-WC-DC.pos | \
+   perl -ne 'chomp; @a=split(/\t/,$_);if($a[9] ne $a[8] && $a[9] ne $a[7]){print "$_\n"}' | \
+   cut -f1,2 > DC-WC-Vpacos.fixed.pos
+      # Results
+      # 6745 SNPs to process
+      
+# Sites WC vs [DC+alpaca]
+sed '1d' Vpacos-WC-DC.pos | \
+   perl -ne 'chomp; @a=split(/\t/,$_);if($a[8] ne $a[7] && $a[8] ne $a[9]){print "$_\n"}' | \
+   cut -f1,2 > WC-DC-Vpacos.fixed.pos
+      # Results
+      # 11567 SNPs to process
+```
 
 
 
