@@ -15,19 +15,17 @@ The SRA accession numbers of the reads were:
 5. [SRR1552610](https://www.ncbi.nlm.nih.gov/sra/?term=SRR1552610)
 
 ```bash
+# Download and map reads for each accession above (only SRR1552599 is shown as an example)
+lib="SRR1552599"
 
-
-cd /wrk/rfitak/HOMOGENEITY_TESTS/ALPACA
-HOME="/wrk/rfitak"
-
-lib=$(sed -n "$SLURM_ARRAY_TASK_ID"p SRR.list)
-
-./fastq-dump \
+# Download reads in fastq format using SRATOOLKIT
+fastq-dump \
    -v -v \
    --split-files \
    $lib
 
-perl /wrk/rfitak/SOFTWARE/popoolation_1.2.2/basic-pipeline/trim-fastq.pl \
+# Trim reads using POPOOLATION v1.2.2 as for the camel reads
+perl trim-fastq.pl \
    --input1 ${lib}_1.fastq \
    --input2 ${lib}_2.fastq \
    --output ${lib}.trimmed \
@@ -36,36 +34,227 @@ perl /wrk/rfitak/SOFTWARE/popoolation_1.2.2/basic-pipeline/trim-fastq.pl \
    --min-length 50 \
    > ${lib}.stats
 
-bwa=/wrk/rfitak/DROM_ALL/DROM-MAPPING/bwa-0.6.2/bwa
-samtools=/wrk/rfitak/SOFTWARE/EXECUTABLES/samtools
+# Set some values for the 'Read Groups tag in samtools
 rg="@RG\tID:CB1\tPL:illumina\tPU:1\tLB:${lib}\tSM:${lib}\tCN:BGI"
 
-$bwa sampe \
--r $rg \
-CB1.fasta \
-<($bwa aln -n 0.01 -o 1 -e 12 -d 12 -l 32 -t 16 CB1.fasta ${lib}.trimmed_1.fq) \
-<($bwa aln -n 0.01 -o 1 -e 12 -d 12 -l 32 -t 16 CB1.fasta ${lib}.trimmed_2.fq) \
-${lib}.trimmed_1.fq \
-${lib}.trimmed_2.fq | \
-$samtools view -Shu - | \
-$samtools sort - ${lib}.sorted
+# Map reads with BWA v0.6.2
+bwa sampe \
+   -r $rg \
+   CB1.fasta \
+   <(bwa aln -n 0.01 -o 1 -e 12 -d 12 -l 32 -t 16 CB1.fasta ${lib}.trimmed_1.fq) \
+   <(bwa aln -n 0.01 -o 1 -e 12 -d 12 -l 32 -t 16 CB1.fasta ${lib}.trimmed_2.fq) \
+   ${lib}.trimmed_1.fq \
+   ${lib}.trimmed_2.fq | \
+   samtools view -Shu - | \
+   samtools sort - ${lib}.sorted
 
-$samtools rmdup -s ${lib}.sorted.bam - | \
-$samtools view -bh -q 20 -f 0x0002 -F 0x0004 -F 0x0008 - > ${lib}.sorted.rmdup.mq20.bam
-$samtools index ${lib}.sorted.rmdup.mq20.bam
-/homeappl/appl_taito/bio/samtools/1.3/bin/samtools stats ${lib}.sorted.rmdup.mq20.bam > ${lib}.bamstats
-$samtools view -H ${lib}.sorted.rmdup.mq20.bam > header.txt
+# Remove duplicate reads, filter for MQ > 20, properly paired and mapped reads, convert to BAM
+samtools \
+   rmdup \
+   -s ${lib}.sorted.bam - | \
+   samtools \
+      view \
+      -bh \
+      -q 20 \
+      -f 0x0002 \
+      -F 0x0004 \
+      -F 0x0008 - > ${lib}.sorted.rmdup.mq20.bam
+
+# Index bam file
+samtools index ${lib}.sorted.rmdup.mq20.bam
+
+# Get mapping statistics
+samtools \
+   stats ${lib}.sorted.rmdup.mq20.bam > ${lib}.bamstats
+```
+
+_Merge the BAM files for each SRR file_
+```bash
+# Make a header from the last bam file
+samtools \
+   view \
+   -H ${lib}.sorted.rmdup.mq20.bam > header.txt
+
+# Make a list of the 5 BAM files
 ls *.sorted.rmdup.mq20.bam > bams.list
-$samtools13 merge \
+
+# Merge the bam files using SAMTOOLS v1.3
+samtools \
+   merge \
    -h header.txt \
    -b bams.list \
    Vpacos.merged.bam
 
-$samtools13 index Vpacos.merged.bam
+# Index the alpaca merged bam file
+samtools index Vpacos.merged.bam
 
-$samtools13 stats \
+# get overall mapping statistics
+samtools stats \
    Vpacos.merged.bam > Vpacos.merged.bamstats
+```
 
+
+
+
+_Make a list of SNPs polymorphic within each camel species_
+The files [Drom.txt](./Data/Drom.txt), [DC.txt](./Data/DC.txt), and [WC.txt](./Data/WC.txt) are simply lists of the individual IDs.
+```bash
+# Get SNPs polymorphic within each species and annotate them
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+   --keep /wrk/rfitak/LD_DECAY/Drom.txt \
+   --maf 0.01 \
+   --max-missing-count 2 \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s Drom.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > Drom.EFF.vcf 2> Drom.out
+   # Results: After filtering, kept 2656809 out of a possible 10819573 Sites
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+   --keep /wrk/rfitak/LD_DECAY/WC.txt \
+   --maf 0.01 \
+   --max-missing-count 2 \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s WC.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > WC.EFF.vcf 2> WC.out
+   # Results: After filtering, kept 3899346 out of a possible 10819573 Sites
+
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+   --keep /wrk/rfitak/LD_DECAY/DC.txt \
+   --maf 0.01 \
+   --max-missing-count 1 \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s DC.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > DC.EFF.vcf 2> DC.out
+   # After filtering, kept 5000559 out of a possible 10819573 Sites
+#____________________________________________
+
+# Get a list of SNPs with an Fst = 1 (fixed differences)
+# for each pair and annotate them (also use Anc allele code at bottom)
+   # DROM vs WC
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+   --weir-fst-pop /wrk/rfitak/LD_DECAY/Drom.txt \
+   --weir-fst-pop /wrk/rfitak/LD_DECAY/WC.txt \
+   --stdout | \
+   sed '1d' | \
+   perl -ne 'chomp;@a=split(/\t/,$_);if($a[2]==1){print "$a[0]\t$a[1]\n";}' \
+   > Drom-WC.Fst.pos
+   # Results: 3410975 SNPs
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+   --positions Drom-WC.Fst.pos \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s DROM-WC.fixed.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > DROM-WC.fixed.EFF.vcf 2> DROM-WC.fixed.out
+   # Results: After filtering, kept 3410975 out of a possible 10819573 Sites
+
+   # DC vs WC
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+	--weir-fst-pop /wrk/rfitak/LD_DECAY/DC.txt \
+	--weir-fst-pop /wrk/rfitak/LD_DECAY/WC.txt \
+	--stdout | \
+	sed '1d' | \
+	perl -ne 'chomp;@a=split(/\t/,$_);if($a[2]==1){print "$a[0]\t$a[1]\n";}' > DC-WC.Fst.pos
+	# Results: 18801 SNPs
+   # Run code at bottom to get new .pos file
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+	--positions ALPACA/DC-WC-Vpacos.fixed.pos \
+	--recode \
+	--stdout | \
+	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+	-v \
+	-i vcf \
+	-o vcf \
+	-s DC-WC-Vpacos.fixed.stats.html \
+	-canon \
+	-onlyProtein \
+	camelus_ferus \
+	- > DC-WC-Vpacos.fixed.EFF.vcf 2> DC-WC-Vpacos.fixed.out
+	# Results: After filtering, kept 6745 out of a possible 10819573 Sites
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+	--positions ALPACA/WC-DC-Vpacos.fixed.pos \
+	--recode \
+	--stdout | \
+	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+	-v \
+	-i vcf \
+	-o vcf \
+	-s WC-DC-Vpacos.fixed.stats.html \
+	-canon \
+	-onlyProtein \
+	camelus_ferus \
+	- > WC-DC-Vpacos.fixed.EFF.vcf 2> WC-DC-Vpacos.fixed.out
+	# Results: After filtering, kept 11567 out of a possible 10819573 Sites
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+	--positions ALPACA/Drom-WC-Vpacos.fixed.pos \
+	--recode \
+	--stdout | \
+	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+	-v \
+	-i vcf \
+	-o vcf \
+	-s Drom-WC-Vpacos.fixed.stats.html \
+	-canon \
+	-onlyProtein \
+	camelus_ferus \
+	- > Drom-WC-Vpacos.fixed.EFF.vcf 2> Drom-WC-Vpacos.fixed.out
+	# Results: After filtering, kept 1837134 out of a possible 10819573 Sites
+vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+	--positions ALPACA/WC-Drom-Vpacos.fixed.pos \
+	--recode \
+	--stdout | \
+	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+	-v \
+	-i vcf \
+	-o vcf \
+	-s WC-Drom-Vpacos.fixed.stats.html \
+	-canon \
+	-onlyProtein \
+	camelus_ferus \
+	- > WC-Drom-Vpacos.fixed.EFF.vcf 2> WC-Drom-Vpacos.fixed.out
+	# Results: After filtering, kept 1523950 out of a possible 10819573 Sites
+```
+
+
+
+
+
+
+
+
+
+
+_Use ANGSD v0.563 to make allele counts at each SNP site_
+```bash
 # Call Ancestral alleles
 angsd/angsd \
    sites index ../DC-WC.Fst.pos
@@ -90,5 +279,4 @@ angsd/angsd \
    -nThreads 16 \
    -ref CB1.fasta \
    -sites ../Drom-WC.Fst.pos
-
 ```
