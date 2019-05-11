@@ -4,7 +4,98 @@ The homogeneity test is a test of excess polymorphism vs divergence and first de
 2. Perform the homogeneity test to examine the intraspecific (polymorphism) and interspecific (divergence) genetic diversity
 3. Perform an HKA test for each lineage of the test.
 
-## Step 1: Estimate ancestral alleles at each site using the alpaca genome as an outgroup
+## Step 1: Make a list of SNPs polymorphic within each camel species_
+The files [Drom.txt](./Data/Drom.txt), [DC.txt](./Data/DC.txt), and [WC.txt](./Data/WC.txt) are simply lists of the individual IDs.  The SNPs were annotated using SNPEFF v.
+
+```bash
+# Dromedaries (Drom)
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep Drom.txt \
+   --maf 0.01 \
+   --max-missing-count 2 \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s Drom.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > Drom.EFF.vcf 2> Drom.out
+   # Results: After filtering, kept 2656809 out of a possible 10819573 Sites
+   
+# Wild camels (WC)
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep WC.txt \
+   --maf 0.01 \
+   --max-missing-count 2 \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s WC.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > WC.EFF.vcf 2> WC.out
+   # Results: After filtering, kept 3899346 out of a possible 10819573 Sites
+
+# Domestic Bactrian camels (DC)
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --keep DC.txt \
+   --maf 0.01 \
+   --max-missing-count 1 \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s DC.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > DC.EFF.vcf 2> DC.out
+   # After filtering, kept 5000559 out of a possible 10819573 Sites
+```
+
+## Step 2: Make a list of SNPs fixed (F<sub>ST</sub> = 1) between camel species
+_Drom vs WC groups_
+```bash
+# DROM vs WC Fst calculations
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --weir-fst-pop Drom.txt \
+   --weir-fst-pop WC.txt \
+   --stdout | \
+   sed '1d' | \
+   perl -ne 'chomp;@a=split(/\t/,$_);if($a[2]==1){print "$a[0]\t$a[1]\n";}' \
+   > Drom-WC.Fst.pos
+   # Results: 3410975 SNPs
+```
+
+_DC vs WC groups_
+```bash
+# DC vs WC Fst calculations
+vcftools 
+   --vcf All.SNPs.filtered.vcf \
+   --weir-fst-pop DC.txt \
+   --weir-fst-pop WC.txt \
+   --stdout | \
+   sed '1d' | \
+   perl -ne 'chomp;@a=split(/\t/,$_);if($a[2]==1){print "$a[0]\t$a[1]\n";}' \
+   > DC-WC.Fst.pos
+	# Results: 18801 SNPs
+```
+
+## Step 3: Estimate ancestral alleles at each site using the alpaca genome as an outgroup
 
 _Map PE, Illumina alpaca genome reads from [Wu et al. 2014](https://doi.org/10.1038/ncomms6188) to the camel reference_
 The SRA accession numbers of the reads were:
@@ -93,80 +184,47 @@ samtools stats \
    Vpacos.merged.bam > Vpacos.merged.bamstats
 ```
 
-
-
-
-_Make a list of SNPs polymorphic within each camel species_
-The files [Drom.txt](./Data/Drom.txt), [DC.txt](./Data/DC.txt), and [WC.txt](./Data/WC.txt) are simply lists of the individual IDs.
+_Use ANGSD v0.563 to make allele counts at each Fixed SNP site_
 ```bash
-# Get SNPs polymorphic within each species and annotate them
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-   --keep /wrk/rfitak/LD_DECAY/Drom.txt \
-   --maf 0.01 \
-   --max-missing-count 2 \
-   --recode \
-   --stdout | \
-   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-   -v \
-   -i vcf \
-   -o vcf \
-   -s Drom.stats.html \
-   -canon \
-   -onlyProtein \
-   camelus_ferus \
-   - > Drom.EFF.vcf 2> Drom.out
-   # Results: After filtering, kept 2656809 out of a possible 10819573 Sites
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-   --keep /wrk/rfitak/LD_DECAY/WC.txt \
-   --maf 0.01 \
-   --max-missing-count 2 \
-   --recode \
-   --stdout | \
-   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-   -v \
-   -i vcf \
-   -o vcf \
-   -s WC.stats.html \
-   -canon \
-   -onlyProtein \
-   camelus_ferus \
-   - > WC.EFF.vcf 2> WC.out
-   # Results: After filtering, kept 3899346 out of a possible 10819573 Sites
+# Index the sites for [Drom vs WC] and [DC vs WC]
+angsd sites index Drom-WC.Fst.pos
+angsd sites index DC-WC.Fst.pos
 
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-   --keep /wrk/rfitak/LD_DECAY/DC.txt \
-   --maf 0.01 \
-   --max-missing-count 1 \
-   --recode \
-   --stdout | \
-   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-   -v \
-   -i vcf \
-   -o vcf \
-   -s DC.stats.html \
-   -canon \
-   -onlyProtein \
-   camelus_ferus \
-   - > DC.EFF.vcf 2> DC.out
-   # After filtering, kept 5000559 out of a possible 10819573 Sites
-#____________________________________________
+# Run ANGSD to make base counts at each site (SNP)
+# Drom vs WC
+angsd \
+   -out Vpacos.counts.Drom-WC \
+   -i Vpacos.merged.bam \
+   -doCounts 1 \
+   -dumpCounts 3 \
+   -baq 1 \
+   -nThreads 16 \
+   -ref CB1.fasta \
+   -sites ../Drom-WC.Fst.pos
 
-# Get a list of SNPs with an Fst = 1 (fixed differences)
-# for each pair and annotate them (also use Anc allele code at bottom)
-   # DROM vs WC
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-   --weir-fst-pop /wrk/rfitak/LD_DECAY/Drom.txt \
-   --weir-fst-pop /wrk/rfitak/LD_DECAY/WC.txt \
-   --stdout | \
-   sed '1d' | \
-   perl -ne 'chomp;@a=split(/\t/,$_);if($a[2]==1){print "$a[0]\t$a[1]\n";}' \
-   > Drom-WC.Fst.pos
-   # Results: 3410975 SNPs
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
+# DC vs WC
+angsd \
+   -out Vpacos.counts \
+   -i Vpacos.merged.bam \
+   -doCounts 1 \
+   -dumpCounts 3 \
+   -baq 1 \
+   -nThreads 16 \
+   -ref CB1.fasta \
+   -sites DC-WC.Fst.pos
+```
+
+
+
+
+
+# Subset the VCF file for these SNPs and annotate them using SNPEFF
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
    --positions Drom-WC.Fst.pos \
    --recode \
    --stdout | \
-   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   java -Xmx4g -jar snpEff.jar ann \
    -v \
    -i vcf \
    -o vcf \
@@ -176,15 +234,18 @@ vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
    camelus_ferus \
    - > DROM-WC.fixed.EFF.vcf 2> DROM-WC.fixed.out
    # Results: After filtering, kept 3410975 out of a possible 10819573 Sites
+```
 
-   # DC vs WC
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-	--weir-fst-pop /wrk/rfitak/LD_DECAY/DC.txt \
-	--weir-fst-pop /wrk/rfitak/LD_DECAY/WC.txt \
-	--stdout | \
-	sed '1d' | \
-	perl -ne 'chomp;@a=split(/\t/,$_);if($a[2]==1){print "$a[0]\t$a[1]\n";}' > DC-WC.Fst.pos
-	# Results: 18801 SNPs
+
+
+
+
+
+
+
+
+
+
    # Run code at bottom to get new .pos file
 vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
 	--positions ALPACA/DC-WC-Vpacos.fixed.pos \
@@ -242,41 +303,4 @@ vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
 	camelus_ferus \
 	- > WC-Drom-Vpacos.fixed.EFF.vcf 2> WC-Drom-Vpacos.fixed.out
 	# Results: After filtering, kept 1523950 out of a possible 10819573 Sites
-```
-
-
-
-
-
-
-
-
-
-
-_Use ANGSD v0.563 to make allele counts at each SNP site_
-```bash
-# Call Ancestral alleles
-angsd/angsd \
-   sites index ../DC-WC.Fst.pos
-angsd/angsd \
-   sites index ../Drom-WC.Fst.pos
-
-angsd/angsd \
-   -out Vpacos.counts \
-   -i Vpacos.merged.bam \
-   -doCounts 1 \
-   -dumpCounts 3 \
-   -baq 1 \
-   -nThreads 16 \
-   -ref CB1.fasta \
-   -sites ../DC-WC.Fst.pos
-angsd/angsd \
-   -out Vpacos.counts.Drom-WC \
-   -i Vpacos.merged.bam \
-   -doCounts 1 \
-   -dumpCounts 3 \
-   -baq 1 \
-   -nThreads 16 \
-   -ref CB1.fasta \
-   -sites ../Drom-WC.Fst.pos
 ```
