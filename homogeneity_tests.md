@@ -290,7 +290,7 @@ df2 = cbind(df2, Vpacos)
 write.table(df2, file = "Vpacos.DC-WC.anc.tsv", sep = "\t", row.names = F, quote = F)
 ```
 
-_Get the alleles from WC and Drom to append to the table_
+_Get the alleles from WC and Drom to append to the table_  
 see the [anc.pl](./Data/anc.pl) script.
 ```bash
 # WC - append column to table titled "WC_Allele"
@@ -379,92 +379,73 @@ sed '1d' Vpacos-WC-DC.pos | \
       # 11567 SNPs to process
 ```
 
-
-
-
-# Subset the VCF file for these SNPs and annotate them using SNPEFF
+_Make subsets of the VCF file for these Fixed SNPs and annotate using SNPEFF_
+```bash
+# Drom vs WC
 vcftools \
    --vcf All.SNPs.filtered.vcf \
-   --positions Drom-WC.Fst.pos \
+   --positions Drom-WC-Vpacos.fixed.pos \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s Drom-WC-Vpacos.fixed.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > Drom-WC-Vpacos.fixed.EFF.vcf 2> Drom-WC-Vpacos.fixed.out
+   # Results: After filtering, kept 1837134 out of a possible 10819573 Sites
+
+# WC vs Drom
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --positions WC-Drom-Vpacos.fixed.pos \
    --recode \
    --stdout | \
    java -Xmx4g -jar snpEff.jar ann \
    -v \
    -i vcf \
    -o vcf \
-   -s DROM-WC.fixed.stats.html \
+   -s WC-Drom-Vpacos.fixed.stats.html \
    -canon \
    -onlyProtein \
    camelus_ferus \
-   - > DROM-WC.fixed.EFF.vcf 2> DROM-WC.fixed.out
-   # Results: After filtering, kept 3410975 out of a possible 10819573 Sites
-```
+   - > WC-Drom-Vpacos.fixed.EFF.vcf 2> WC-Drom-Vpacos.fixed.out
+   # Results: After filtering, kept 1523950 out of a possible 10819573 Sites
 
+# DC vs WC
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --positions DC-WC-Vpacos.fixed.pos \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s DC-WC-Vpacos.fixed.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > DC-WC-Vpacos.fixed.EFF.vcf 2> DC-WC-Vpacos.fixed.out
+   # Results: After filtering, kept 6745 out of a possible 10819573 Sites
 
-
-
-
-
-
-
-
-
-
-   # Run code at bottom to get new .pos file
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-	--positions ALPACA/DC-WC-Vpacos.fixed.pos \
-	--recode \
-	--stdout | \
-	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-	-v \
-	-i vcf \
-	-o vcf \
-	-s DC-WC-Vpacos.fixed.stats.html \
-	-canon \
-	-onlyProtein \
-	camelus_ferus \
-	- > DC-WC-Vpacos.fixed.EFF.vcf 2> DC-WC-Vpacos.fixed.out
-	# Results: After filtering, kept 6745 out of a possible 10819573 Sites
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-	--positions ALPACA/WC-DC-Vpacos.fixed.pos \
-	--recode \
-	--stdout | \
-	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-	-v \
-	-i vcf \
-	-o vcf \
-	-s WC-DC-Vpacos.fixed.stats.html \
-	-canon \
-	-onlyProtein \
-	camelus_ferus \
-	- > WC-DC-Vpacos.fixed.EFF.vcf 2> WC-DC-Vpacos.fixed.out
-	# Results: After filtering, kept 11567 out of a possible 10819573 Sites
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-	--positions ALPACA/Drom-WC-Vpacos.fixed.pos \
-	--recode \
-	--stdout | \
-	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-	-v \
-	-i vcf \
-	-o vcf \
-	-s Drom-WC-Vpacos.fixed.stats.html \
-	-canon \
-	-onlyProtein \
-	camelus_ferus \
-	- > Drom-WC-Vpacos.fixed.EFF.vcf 2> Drom-WC-Vpacos.fixed.out
-	# Results: After filtering, kept 1837134 out of a possible 10819573 Sites
-vcftools --vcf /wrk/rfitak/SNP-ANALYSIS/VQSR/All.SNPs.filtered.vcf \
-	--positions ALPACA/WC-Drom-Vpacos.fixed.pos \
-	--recode \
-	--stdout | \
-	java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
-	-v \
-	-i vcf \
-	-o vcf \
-	-s WC-Drom-Vpacos.fixed.stats.html \
-	-canon \
-	-onlyProtein \
-	camelus_ferus \
-	- > WC-Drom-Vpacos.fixed.EFF.vcf 2> WC-Drom-Vpacos.fixed.out
-	# Results: After filtering, kept 1523950 out of a possible 10819573 Sites
+# WC vs DC
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --positions ALPACA/WC-DC-Vpacos.fixed.pos \
+   --recode \
+   --stdout | \
+   java -Xmx4g -jar snpEff.jar ann \
+   -v \
+   -i vcf \
+   -o vcf \
+   -s WC-DC-Vpacos.fixed.stats.html \
+   -canon \
+   -onlyProtein \
+   camelus_ferus \
+   - > WC-DC-Vpacos.fixed.EFF.vcf 2> WC-DC-Vpacos.fixed.out
+   # Results: After filtering, kept 11567 out of a possible 10819573 Sites   
 ```
