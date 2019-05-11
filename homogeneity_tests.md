@@ -4,7 +4,7 @@ The homogeneity test is a test of excess polymorphism vs divergence and first de
 2. Perform the homogeneity test to examine the intraspecific (polymorphism) and interspecific (divergence) genetic diversity
 3. Perform an HKA test for each lineage of the test.
 
-## Step 1: Make a list of SNPs polymorphic within each camel species_
+## Step 1: Make a list of SNPs polymorphic within each camel species
 The files [Drom.txt](./Data/Drom.txt), [DC.txt](./Data/DC.txt), and [WC.txt](./Data/WC.txt) are simply lists of the individual IDs.  The SNPs were annotated using SNPEFF v.
 
 ```bash
@@ -448,4 +448,116 @@ vcftools \
    camelus_ferus \
    - > WC-DC-Vpacos.fixed.EFF.vcf 2> WC-DC-Vpacos.fixed.out
    # Results: After filtering, kept 11567 out of a possible 10819573 Sites   
+```
+
+## Step 4: Perform homogeneity and HKA tests
+This following code basically builds a big table of all the results and statistical tests which can be later filtered for the desired criteria of interest (e.g., using EXCEL)
+
+_Get a list of all transcripts annotated in SNPEFF_
+```bash
+sed '1d' All.SNPs.filtered.stats.genes.txt | \
+   sed '1d' | \
+   cut -f3 > transcripts.list
+   # Results: 17,912 transcripts
+```
+
+_Build some custom R functions to use in the analysis_
+```R
+# Build custom functions
+fisher <- function(x){
+	x=matrix(as.integer(x[2:5]),nrow=2, byrow=T)
+	z=fisher.test(x)
+	return(z$p.value)
+}
+HKA_AC <- function(x){
+	x=c(x[2], A.hka, x[4], C.hka)
+	x=matrix(as.integer(x),nrow=2, byrow=T)
+	z=fisher.test(x)
+	return(z$p.value)
+}
+HKA_BD <- function(x){
+	x=c(x[3], B.hka, x[5], D.hka)
+	x=matrix(as.integer(x),nrow=2, byrow=T)
+	z=fisher.test(x)
+	return(z$p.value)
+}
+ratio <- function(x){
+	x=as.integer(x[2:5])
+	z=(x[3]/x[1]) / (x[4]/x[2])
+	return(z)
+}
+```
+
+_For DROM vs WC, build a table of SNP sites to use_  
+In each case, the "bases_affected_EXON" column from SNPEFF is counted.
+```bash
+# Drom vs WC
+c=1
+while read line
+   do
+   # A = count number of polymorphic sites in the dromedary samples
+   A=$(grep "$line" Drom.stats.genes.txt | cut -f35)
+   if [ "$A" = "" ]
+      then
+      A="0"
+   fi
+   # B = count number of polymorphic sites in the wild camel samples
+   B=$(grep "$line" WC.stats.genes.txt | cut -f36)
+   if [ "$B" = "" ]
+      then
+      B="0"
+   fi
+   # C = count number of fixed differences between dromedaries and both wild camels and the alpaca genome sequence.
+   C=$(grep "$line" Drom-WC-Vpacos.fixed.stats.genes.txt | cut -f32)
+   if [ "$C" = "" ]
+      then
+      C="0"
+   fi
+   # D = count number of fixed differences between wild camels and both dromedaries and the alpaca genome sequence.
+   D=$(grep "$line" WC-Drom-Vpacos.fixed.stats.genes.txt | cut -f33)
+   if [ "$D" = "" ]
+      then
+      D="0"
+   fi
+   echo -e "$line\t$A\t$B\t$C\t$D" >> Drom-WC.tbl
+   echo "Finished transcript $c"
+   c=$(( $c + 1 ))
+done < transcripts.list
+```
+
+_For DC vs WC, build a table of SNP sites to use_  
+In each case, the "bases_affected_EXON" column from SNPEFF is counted.
+
+```bash
+c=1
+while read line
+do
+   # A = count number of polymorphic sites in the DC samples
+   A=$(grep "$line" DC.stats.genes.txt | cut -f35)
+   if [ "$A" = "" ]
+      then
+      A="0"
+   fi
+   # B = count number of polymorphic sites in the wild camel samples
+   B=$(grep "$line" WC.stats.genes.txt | cut -f36)
+   if [ "$B" = "" ]
+      then
+      B="0"
+   fi
+   # C = count number of fixed differences between DC and both wild camels and the alpaca genome sequence.
+   C=$(grep "$line" DC-WC-Vpacos.fixed.stats.genes.txt | cut -f22)
+   if [ "$C" = "" ]
+      then
+      C="0"
+   fi
+   # D = count number of fixed differences between wild camels and both DC and the alpaca genome sequence.
+   D=$(grep "$line" WC-DC-Vpacos.fixed.stats.genes.txt | cut -f25)
+   if [ "$D" = "" ]
+      then
+      D="0"
+   fi
+   echo -e "$line\t$A\t$B\t$C\t$D" >> DC-WC.tbl
+   echo "Finished transcript $c"
+   c=$(( $c + 1 ))
+done < transcripts.list
 ```
