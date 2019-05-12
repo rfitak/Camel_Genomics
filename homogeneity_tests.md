@@ -387,7 +387,7 @@ vcftools \
    --positions Drom-WC-Vpacos.fixed.pos \
    --recode \
    --stdout | \
-   java -Xmx4g -jar /wrk/rfitak/SOFTWARE/snpEff/snpEff.jar ann \
+   java -Xmx4g -jar snpEff.jar ann \
    -v \
    -i vcf \
    -o vcf \
@@ -435,7 +435,7 @@ vcftools \
 # WC vs DC
 vcftools \
    --vcf All.SNPs.filtered.vcf \
-   --positions ALPACA/WC-DC-Vpacos.fixed.pos \
+   --positions WC-DC-Vpacos.fixed.pos \
    --recode \
    --stdout | \
    java -Xmx4g -jar snpEff.jar ann \
