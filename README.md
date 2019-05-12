@@ -39,7 +39,7 @@ ___This GitHub repository contains a summary of the various code, software, and 
 
 [PSMC Demographic Reconstructions](./psmc.md)
 
-Homogeneity/HKA Tests (TBD)
+[Homogeneity/HKA Tests of Selection](./homogeneity_tests.md)
 
 [Sliding window analysis of genetic diversity](./window_diversity.md)
 
