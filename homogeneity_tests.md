@@ -562,7 +562,7 @@ do
 done < transcripts.list
 ```
 
-_Finally, in R perform all tests and build a big table
+_Finally, in R perform all tests and build a big table_
 ```R
 # Setup output table header
 names = c("Transcript", "A", "B", "C", "D", "Homo_P", "Homo_Q", "HKA_1_P", "HKA_1_Q", "HKA_2_P", "HKA_2_Q", "CA-DB_ratio")
