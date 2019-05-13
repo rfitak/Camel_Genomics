@@ -72,3 +72,4 @@ ___This GitHub repository contains a summary of the various code, software, and 
 | BLAST2GO | 3.0.8 | Conesa, A. et al. Blast2GO: a universal tool for annotation, visualization and analysis in functional genomics research. Bioinformatics 21, 3674-3676 (2005). |
 | INTERPROSCAN | 5.7.48 | Jones, P. et al. InterProScan 5: genome-scale protein function classification. Bioinformatics 30, 1236-1240 (2014). |
 | TOPGO | 2.28.0 | Alexa, A. & Rahnenfuhrer, J. (R package version 2.28.0, 2016). |
+| SNPEFF | 4.1a | Cingolani P, Platts A, Wang le L, Coon M, Nguyen T, Wang L, Land SJ, Lu X, Ruden DM. A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of _Drosophila melanogaster_ strain w1118; iso-2; iso-3. Fly 6(2), 80-92 (2012). |
