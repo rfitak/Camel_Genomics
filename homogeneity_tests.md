@@ -5,7 +5,7 @@ The homogeneity test is a test of excess polymorphism vs divergence and first de
 3. Perform an HKA test for each lineage of the test.
 
 ## Step 1: Make a list of SNPs polymorphic within each camel species
-The files [Drom.txt](./Data/Drom.txt), [DC.txt](./Data/DC.txt), and [WC.txt](./Data/WC.txt) are simply lists of the individual IDs.  The SNPs were annotated using SNPEFF v.
+The files [Drom.txt](./Data/Drom.txt), [DC.txt](./Data/DC.txt), and [WC.txt](./Data/WC.txt) are simply lists of the individual IDs.  The SNPs were annotated using SNPEFF v4.1a.
 
 ```bash
 # Dromedaries (Drom)
