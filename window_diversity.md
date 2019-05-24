@@ -160,7 +160,7 @@ paste \
 
 
 ### Find windows in Drom, DC, and WC under positive selection
-Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels (for Drom and DC).  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  In WC, we will take a bit of a different approach.  First, we will look for windows with a much higher pi in the domestic species than in wild camels, and overlap that with windows in wild camels that also have a very negative Tajima's D. This also implies relaxes selection in the domestic species.  Later, we will add the results of the population branch statistic to make one big file!
+Here we will attempt to find windows with a dearth or polymorphism and excess of divergence with wild camels (for Drom and DC).  We will use a cutoff of 99.5% and 0.5% for the extreme 'outliers'.  In WC, we will take a bit of a different approach.  First, we will look for windows with a much higher pi in the domestic species than in wild camels, and overlap that with windows in wild camels that also have a very negative Tajima's D. This also implies relaxed selection in the domestic species.  Later, we will add the results of the population branch statistic to make one big file!
 
 ```R
 # First load the window results file
