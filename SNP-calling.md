@@ -542,7 +542,7 @@ java -Xmx20g -jar GenomeAnalysisTK.jar \
 
 # Variant Quality Score Recalibration (VQSR) using GATK
 
-_Make a bed file of the XY scaffolds to exclude and the masking coordinates (repetitive elements)
+_Make a bed file of the XY scaffolds to exclude and the masking coordinates (repetitive elements)_
 ```bash
 # The file "masking_coordinates" was downloaded earlier from the CB1 reference genome (see code above)
 cat \
@@ -563,7 +563,7 @@ cat \
 	<(bedtools sort -header -i exclude.bed.tmp | bedtools merge -i /dev/stdin) > exclude.bed
 ```
 
-_Additional filtering of variants usinf VCFTOOLS_
+_Additional filtering of variants using VCFTOOLS_
 ```bash
 # Finish cleaning of SNPs using VCFTOOLS v0.1.12b
    # Remove all filtered variants and genotypes from GATK
@@ -669,5 +669,3 @@ vcftools --vcf All.SNPs.filtered.vcf \
 	# Results: Ts/Tv ratio: 2.541
 	# After filtering, kept 10819573 out of a possible 10819573 Sites
 ```
-
-
