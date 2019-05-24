@@ -144,7 +144,7 @@ echo "Finished $i"
 done
 ```
 
-_Plot Admixture results (Cross-valdiation plot and ancestry plots)_
+_Plot Admixture results (Cross-validation plot and ancestry plots)_
 ```R
 # Ancestry barplots for K=2 and 3
 ID = c("DC158", "DC269", "DC399", "DC400", "DC402", "DC408", "DC423",
