@@ -12,8 +12,8 @@
 7. Institute of Remote Sensing and Digital Earth, Chinese Academy of Sciences, Jia No.20 North, DaTun road, ChaoYang District, Beijing, China.
 8. Mammalian Ecology Laboratory, Institute of General and Experimental Biology, Mongolian Academy of Sciences, Peace avenue-54b, Bayanzurh District, Ulaanbaatar, 210351, Mongolia.
 9. Laboratory of Genetics, Institute of General and Experimental Biology, Mongolian Academy of Sciences, Peace avenue-54b, Bayarzurh District, Ulaanbaatar, 210351, Mongolia.
- 10. University of Khartoum, Department for Meat Sciences, Khartoum, Sudan.
-11. Lasbela University of Agriculture, Water and Marine Sciences, Regional Cooperation for Development (RCD) Highway, Uthal, Pakistan.
+10. University of Khartoum, Department for Meat Sciences, Khartoum, Sudan.
+11. Camelait, Alain Farms for Livestock Production, Alain Dubai Road, Alain, United Arab Emirates.
 12. Farm and Veterinary Department, Emirates Industry for Camel Milk and Products, PO Box 294236, Dubai, Umm Nahad, United Arab Emirates.
 13. Wildlife Conservation Society, Wildlife Health Program, Bronx, New York, USA.
 14. Research Institute of Wildlife Ecology, Vetmeduni Vienna, Savoyenstraße 1, 1160, Vienna, Austria.
