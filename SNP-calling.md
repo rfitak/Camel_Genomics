@@ -669,3 +669,78 @@ vcftools --vcf All.SNPs.filtered.vcf \
 	# Results: Ts/Tv ratio: 2.541
 	# After filtering, kept 10819573 out of a possible 10819573 Sites
 ```
+
+_Sliding window measures of genetic variation_
+```bash
+# Calculate nucleotide diversity for each species, using non-overlapping 10-kb windows
+# Excluding XY putative scaffolds
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep Drom.indiv \
+   --window-pi 10000 \
+   --window-pi-step 10000 \
+   --out Drom
+
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep DC.indiv \
+   --window-pi 10000 \
+   --window-pi-step 10000 \
+   --out DC
+
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep WC.indiv \
+   --window-pi 10000 \
+   --window-pi-step 10000 \
+   --out WC
+
+# Calculate SNP desnity for each species, using non-overlapping 10-kb windows
+# Excluding XY putative scaffolds
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep Drom.indiv \
+   --SNPdensity 10000 \
+   --out Drom
+   
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep DC.indiv \
+   --SNPdensity 10000 \
+   --out DC
+
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep WC.indiv \
+   --SNPdensity 10000 \
+   --out WC
+   
+# Calculate Tajima's D for each species, using non-overlapping 10-kb windows
+# Excluding XY putative scaffolds
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep Drom.indiv \
+   --TajimaD 10000 \
+   --out Drom
+   
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep DC.indiv \
+   --TajimaD 10000 \
+   --out DC
+
+vcftools \
+   --vcf All.SNPs.filtered.vcf \
+   --exclude-bed XY.exclude.bed \
+   --keep WC.indiv \
+   --TajimaD 10000 \
+   --out WC
+```
