@@ -743,4 +743,41 @@ vcftools \
    --keep WC.indiv \
    --TajimaD 10000 \
    --out WC
+
+# Calculate SNP desnity for each individual, using non-overlapping 10-kb windows
+# Excluding XY putative scaffolds, where $i represents each camel ID from a file called camels
+while read i
+   do
+   vcftools --vcf All.SNPs.filtered.vcf \
+      --indv $i \
+      --exclude XY.exclude.bed \
+      --maf 0.0001 \
+      --SNPdensity 10000 \
+      --out $i
+done < camels
+
+# Make of file of individual SNP densities in a format to be read later by ggplot in R
+while read i
+   do
+   sed '1d' $i.snpden | cut -f4 | sed "s/^./$i &/g" | tr " " "\t" >> All.snpden
+done < camels
+```
+
+_Extra code to plot (for Fig 2a) individual heterozygosity in R_
+```R
+# Load ggplot
+library(ggplot2)
+
+# Load table of individual SNP densities
+data = read.table("All.snpden", sep = "\t", header = F)
+colnames(data) = c("ID", "SNPdensity")
+
+# Plot in ggplot
+p = ggplot(data, aes(x = ID, y = SNPdensity)) +
+   geom_boxplot(outlier.shape = NA, fill = c(rep("#d40000",7), rep("#555555",9), rep("#3771c8",9))) +
+   theme_bw() +
+   scale_y_continuous(limits = c(0, 3.05), expand = c(0,0)) +
+   theme(axis.text.x = element_text(siz e= 12, angle = -45),
+      axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 14)) +
+   xlab("") + ylab("Heterozygosity (x10-3)")
 ```
