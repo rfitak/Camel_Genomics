@@ -761,6 +761,9 @@ while read i
    do
    sed '1d' $i.snpden | cut -f4 | sed "s/^./$i &/g" | tr " " "\t" >> All.snpden
 done < camels
+
+# Add header line
+cat <(echo -e "ID\tSNPdensity") <(cat All.snpden) > All.snpden
 ```
 
 _Extra code to plot (for Fig 2a) individual heterozygosity in R_
@@ -769,8 +772,7 @@ _Extra code to plot (for Fig 2a) individual heterozygosity in R_
 library(ggplot2)
 
 # Load table of individual SNP densities
-data = read.table("All.snpden", sep = "\t", header = F)
-colnames(data) = c("ID", "SNPdensity")
+data = read.table("All.snpden", sep = "\t", header = T)
 
 # Plot in ggplot
 p = ggplot(data, aes(x = ID, y = SNPdensity)) +
